@@ -18,17 +18,97 @@
  */
 
 import {Stream} from 'xstream';
-import {View, Text, Image} from 'react-native';
+import {View, Animated, Image, Text} from 'react-native';
 import {h} from '@cycle/native-screen';
-import Markdown, {markdownStyles} from '../../global-styles/markdown';
 import Feed from '../../components/Feed';
 import Button from '../../components/Button';
 import ToggleButton from '../../components/ToggleButton';
+import NavBarWithBack from '../../components/NavBarWithBack';
 import {SSBSource} from '../../drivers/ssb';
-import {styles} from './styles';
+import {
+  styles,
+  coverScrolling,
+  avatarScrolling,
+  nameScrolling,
+  descriptionAreaScrolling,
+} from './styles';
 import {State} from './model';
 import {Screens} from '../..';
 import {isRootPostMsg} from 'ssb-typescript/utils';
+
+function renderCover(state: State) {
+  return h(Animated.View, {
+    style: [styles.cover, coverScrolling(state.yOffset)],
+  });
+}
+
+function renderAvatar(state: State) {
+  return h(
+    Animated.View,
+    {
+      style: [styles.avatarBackground, avatarScrolling(state.yOffset)],
+    },
+    [
+      h(Image, {
+        style: styles.avatar,
+        source: {uri: state.about.imageUrl || undefined},
+      }),
+    ],
+  );
+}
+
+function renderName(state: State) {
+  return h(
+    Animated.View,
+    {style: [styles.nameWrapper, nameScrolling(state.yOffset)]},
+    [
+      h(
+        Text,
+        {
+          style: styles.name,
+          numberOfLines: 1,
+          ellipsizeMode: 'middle',
+          accessible: true,
+          accessibilityLabel: 'Profile Name',
+        } as any,
+        state.about.name,
+      ),
+    ],
+  );
+}
+
+function renderDescription(state: State, isSelfProfile: boolean) {
+  return h(
+    Animated.View,
+    {
+      style: [styles.descriptionArea, descriptionAreaScrolling(state.yOffset)],
+      accessible: true,
+      accessibilityLabel: 'Profile Description',
+    },
+    [
+      isSelfProfile
+        ? h(Button, {
+            selector: 'editProfile',
+            style: styles.follow,
+            text: 'Edit profile',
+            accessible: true,
+            accessibilityLabel: 'Edit Profile Button',
+          })
+        : h(ToggleButton, {
+            selector: 'follow',
+            style: styles.follow,
+            text: state.about.following === true ? 'Following' : 'Follow',
+            toggled: state.about.following === true,
+          }),
+
+      h(
+        Text,
+        {style: styles.description, numberOfLines: 2},
+        state.about.description || '',
+      ),
+    ],
+  );
+}
 
 export default function view(state$: Stream<State>, ssbSource: SSBSource) {
   return state$.map((state: State) => {
@@ -36,71 +116,28 @@ export default function view(state$: Stream<State>, ssbSource: SSBSource) {
 
     return {
       screen: Screens.Profile,
-      vdom: h(
-        View,
-        {style: styles.container},
-        [
-          h(View, {style: styles.cover}, [
-            h(
-              Text,
-              {
-                style: styles.name,
-                numberOfLines: 1,
-                ellipsizeMode: 'middle',
-                accessible: true,
-                accessibilityLabel: 'Profile Name',
-              } as any,
-              state.about.name,
-            ),
-          ]),
+      vdom: h(View, {style: styles.container}, [
+        h(NavBarWithBack, {style: styles.navbar}),
+        renderCover(state),
+        renderAvatar(state),
+        renderName(state),
+        renderDescription(state, isSelfProfile),
 
-          h(View, {style: styles.avatarBackground}, [
-            h(Image, {
-              style: styles.avatar,
-              source: {uri: state.about.imageUrl || undefined},
-            }),
-          ]),
-
-          isSelfProfile
-            ? h(Button, {
-                selector: 'editProfile',
-                style: styles.follow,
-                text: 'Edit profile',
-                accessible: true,
-                accessibilityLabel: 'Edit Profile Button',
-              })
-            : h(ToggleButton, {
-                selector: 'follow',
-                style: styles.follow,
-                text: state.about.following === true ? 'Following' : 'Follow',
-                toggled: state.about.following === true,
-              }),
-
-          h(
-            View,
-            {
-              style: styles.descriptionArea,
-              accessible: true,
-              accessibilityLabel: 'Profile Description',
-            },
-            [h(Markdown, {markdownStyles}, state.about.description || '')],
-          ),
-
-          h(Feed, {
-            selector: 'feed',
-            getReadable: state.getFeedReadable,
-            getPublicationsReadable: isSelfProfile
-              ? state.getSelfRootsReadable
-              : null,
-            publication$: isSelfProfile
-              ? ssbSource.publishHook$.filter(isRootPostMsg)
-              : null,
-            selfFeedId: state.selfFeedId,
-            style: isSelfProfile ? styles.feedWithHeader : styles.feed,
-            showPublishHeader: isSelfProfile,
-          }),
-        ] as Array<any>,
-      ),
+        h(Feed, {
+          style: isSelfProfile ? styles.feedWithHeader : styles.feed,
+          selector: 'feed',
+          getReadable: state.getFeedReadable,
+          getPublicationsReadable: isSelfProfile
+            ? state.getSelfRootsReadable
+            : null,
+          publication$: isSelfProfile
+            ? ssbSource.publishHook$.filter(isRootPostMsg)
+            : null,
+          selfFeedId: state.selfFeedId,
+          animatedYOffset: state.yOffset,
+          showPublishHeader: isSelfProfile,
+        }),
+      ]),
     };
   });
 }

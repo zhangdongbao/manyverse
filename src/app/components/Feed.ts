@@ -18,7 +18,7 @@
  */
 
 import {PureComponent, Component} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Animated} from 'react-native';
 import {h} from '@cycle/native-screen';
 import * as Progress from 'react-native-progress';
 import {FeedId, MsgId} from 'ssb-typescript';
@@ -136,6 +136,7 @@ type Props = {
   selfFeedId: FeedId;
   showPublishHeader: boolean;
   style?: any;
+  animatedYOffset?: Animated.Value;
   onOpenCompose?: () => void;
   onPressLike?: (ev: {msgKey: MsgId; like: boolean}) => void;
   onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void;
@@ -156,10 +157,22 @@ export default class Feed extends Component<Props, State> {
       const {onOpenCompose} = props;
       if (onOpenCompose) onOpenCompose();
     };
+    if (props.animatedYOffset) {
+      this._onScrollUpdateAnimation = Animated.event([
+        {
+          nativeEvent: {
+            contentOffset: {
+              y: props.animatedYOffset,
+            },
+          },
+        },
+      ]);
+    }
   }
 
   private addedThreadsStream: any | null;
   private _onOpenCompose: () => void;
+  private _onScrollUpdateAnimation: any | null;
   private subscription?: Subscription;
 
   public componentDidMount() {
@@ -211,6 +224,7 @@ export default class Feed extends Component<Props, State> {
       style,
       getReadable,
       selfFeedId,
+      animatedYOffset,
     } = this.props;
 
     return h(PullFlatList, {
@@ -220,6 +234,7 @@ export default class Feed extends Component<Props, State> {
       initialNumToRender: 2,
       pullAmount: 1,
       numColumns: 1,
+      onScroll: animatedYOffset ? this._onScrollUpdateAnimation : () => {},
       refreshable: true,
       refreshColors: [Palette.indigo7],
       keyExtractor: (thread: ThreadAndExtras, index: number) =>

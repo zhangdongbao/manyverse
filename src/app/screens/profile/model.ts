@@ -25,6 +25,7 @@ import {Reducer} from 'cycle-onionify';
 import {FeedId, About} from 'ssb-typescript';
 import {State as EditProfileState} from './edit';
 import {Lens} from 'cycle-onionify/lib/types';
+import {Animated} from 'react-native';
 
 export type State = {
   selfFeedId: FeedId;
@@ -32,6 +33,7 @@ export type State = {
   about: About & {id: FeedId};
   getFeedReadable: GetReadable<ThreadAndExtras> | null;
   getSelfRootsReadable: GetReadable<ThreadAndExtras> | null;
+  yOffset: Animated.Value;
   edit?: EditProfileState;
 };
 
@@ -41,6 +43,7 @@ export function initState(selfFeedId: FeedId): State {
     displayFeedId: selfFeedId,
     getFeedReadable: null,
     getSelfRootsReadable: null,
+    yOffset: new Animated.Value(0),
     about: {
       name: selfFeedId,
       description: '',

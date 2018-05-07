@@ -64,30 +64,36 @@ export type Sinks = {
 export const screenIDs = Object['values'](Screens);
 
 function addAlphaDisclaimer(screen$: Stream<ScreenVNode>): Stream<ScreenVNode> {
-  return screen$.map(screen => ({
-    screen: screen.screen,
-    vdom: h(View, {style: {flex: 1}}, [
-      screen.vdom,
-      h(
-        Text,
-        {
-          style: {
-            position: 'absolute',
-            left: 0,
-            bottom: 0,
-            color: 'black',
-            fontSize: 15,
-            transform: [
-              {rotateZ: '-90deg'},
-              {translateY: -96},
-              {translateX: 140},
-            ],
-          },
-        },
-        'Alpha version, not ready for use',
-      ),
-    ]),
-  }));
+  return screen$.map(screen => {
+    if (screen.screen === Screens.ComposePublishButton) {
+      return screen;
+    } else {
+      return {
+        screen: screen.screen,
+        vdom: h(View, {style: {flex: 1}}, [
+          screen.vdom,
+          h(
+            Text,
+            {
+              style: {
+                position: 'absolute',
+                left: 0,
+                bottom: 0,
+                color: 'black',
+                fontSize: 15,
+                transform: [
+                  {rotateZ: '-90deg'},
+                  {translateY: -96},
+                  {translateX: 140},
+                ],
+              },
+            },
+            'Alpha version, not ready for use',
+          ),
+        ]),
+      };
+    }
+  });
 }
 
 export function app(sources: Sources): Sinks {

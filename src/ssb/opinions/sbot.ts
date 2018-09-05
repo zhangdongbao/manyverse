@@ -34,6 +34,9 @@ const MultiServer = require('multiserver');
 const makeWSPlugin = require('multiserver/plugins/ws');
 const noAuthPlugin = require('multiserver/plugins/noauth');
 
+const makeBluetoothPlugin = require('./bluetooth/multiserv');
+const BluetoothManager = require('./bluetooth/bluetooth-manager');
+
 const needs = nest({
   'keys.sync.load': 'first',
   'sbot.obs.connectionStatus': 'first',
@@ -95,6 +98,8 @@ const create = (api: any) => {
   const connectedPeers = MutantSet();
   const localPeers = MutantSet();
 
+  const bluetoothManager = BluetoothManager();
+
   const rec = Reconnect((isConn: any) => {
     function notify(value?: any) {
       isConn(value);
@@ -103,12 +108,17 @@ const create = (api: any) => {
 
     const ms = MultiServer([
       [
+        makeBluetoothPlugin({
+          bluetoothManager: bluetoothManager
+        }),
         makeWSPlugin(),
         noAuthPlugin({
           keys: toSodiumKeys(keys),
         }),
       ],
     ]);
+
+    bluetoothManager.start((err: string, address: string) => ms.client(address));
 
     const address = [
       'ws:localhost:8422',
@@ -279,6 +289,7 @@ const create = (api: any) => {
         connectedPeers: () => connectedPeers,
         localPeers: () => localPeers,
       },
+      bluetoothManager: bluetoothManager
     },
   };
 

@@ -36,6 +36,7 @@ const noAuthPlugin = require('multiserver/plugins/noauth');
 
 const makeBluetoothPlugin = require('./bluetooth/multiserv');
 const BluetoothManager = require('./bluetooth/bluetooth-manager');
+import { BluetoothConnector } from './bluetooth/bluetooth-connector';
 
 const needs = nest({
   'keys.sync.load': 'first',
@@ -100,6 +101,11 @@ const create = (api: any) => {
 
   const bluetoothManager = BluetoothManager();
 
+  // Bluetooth connector exposes only a subset of the functionality of the manager
+  // (necessarily functionality to list devices and connect, but not to start servers,
+  // etc)
+  let bluetoothConnector : BluetoothConnector = bluetoothManager;
+
   const rec = Reconnect((isConn: any) => {
     function notify(value?: any) {
       isConn(value);
@@ -162,6 +168,7 @@ const create = (api: any) => {
 
   return {
     sbot: {
+      bluetoothConnector: bluetoothConnector,
       sync: {
         cache: () => cache,
       },

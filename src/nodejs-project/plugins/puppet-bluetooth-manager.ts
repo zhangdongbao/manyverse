@@ -15,11 +15,12 @@
 
 const pull = require('pull-stream');
 const Pushable = require('pull-pushable');
-import BluetoothSerial from 'react-native-bluetooth-serial'
 
-export default () => {
+var rn_bridge = require('rn-bridge');
 
-  const serviceUUID = "b0b2e90d-0cda-4bb0-8e4b-fb165cd17d48";
+function makeManager () {
+
+  // const serviceUUID = "b0b2e90d-0cda-4bb0-8e4b-fb165cd17d48";
 
   const connections = {
 
@@ -35,7 +36,18 @@ export default () => {
     // Sink: writing to the remote device
     const duplexStream = {
       source: Pushable(),
-      sink: pull.drain((data) => BluetoothSerial.writeToDevice(deviceAddress, btoa(data)))
+      sink: pull.drain( (msg: any) => {
+
+        var bridgeMsg = {
+          type: "write",
+          params: {
+            data: msg,
+            remoteAddress: deviceAddress
+          }
+        }
+
+        rn_bridge.channel.send(JSON.stringify(bridgeMsg));
+      })  // Sink to bridge!
     }
 
     connections[deviceAddress] = duplexStream;
@@ -70,7 +82,7 @@ export default () => {
     }
   }
 
-  function onDataRead(params): void {
+  function onDataRead(params: any): void {
     const deviceAddress = params.remoteAddress;
     const data = params.data;
 
@@ -85,10 +97,22 @@ export default () => {
   }
 
   function setupEventListeners(): void {
-    BluetoothSerial.on("connectionSuccess", onConnect);
-    BluetoothSerial.on("connectionLost", onConnectionLost);
-    BluetoothSerial.on("connectionFailed", onConnectionFailed);
-    BluetoothSerial.on("read", onDataRead);
+
+    rn_bridge.channel.on('message', (msg: any) => {
+      var message = JSON.parse(msg);
+
+      if (message.type === "connectionSuccess") {
+        onConnect(message.params);
+      } else if (message.type === "connectionLost") {
+        onConnectionLost(message.params);
+      } else if (message.type === "connectionFailed") {
+        onConnectionFailed(message.params);
+      }
+      else if (message.type === "read") {
+        onDataRead(message.params);
+      }
+
+    });
   }
 
   function start(onOutgoing: any): void {
@@ -97,39 +121,42 @@ export default () => {
     setupEventListeners();
   }
 
-  function listenForIncomingConnections(cb): void {
+  function listenForIncomingConnections(cb: any): void {
     onIncomingConnection = cb;
 
-    BluetoothSerial.listenForIncomingConnections(
-      "scuttlebutt", serviceUUID
-    );
+    var bridgeMsg = {
+      type: "listenIncoming",
+      params: {}
+    }
+
+    rn_bridge.channel.send(JSON.stringify(bridgeMsg));
   }
 
   function stopServer(): void {
-    // ...
+    // not required for puppet
   }
 
   function makeDeviceDiscoverable(): void {
-    BluetoothSerial.makeDeviceDiscoverable(120);
+    // not required for puppet
   }
 
   function discoverUnpairedDevices(): any {
-    return BluetoothSerial.discoverUnpairedDevices();
+    // not required for puppet
   }
 
   function listPairedDevices(): any {
-    return BluetoothSerial.list();
+    // not required for puppet
   }
 
-  function connect(address): void {
-    BluetoothSerial.connect(address, "b0b2e90d-0cda-4bb0-8e4b-fb165cd17d48");
+  function connect(address: any): void {
+    // not required for puppet
   }
 
-  function disconnect(address): void {
-    // ...
+  function disconnect(address: any): void {
+    // not required for puppet
   }
 
-  function getConnection(address): any {
+  function getConnection(address: any): any {
     return connections[address];
   }
 
@@ -146,3 +173,5 @@ export default () => {
   }
 
 }
+
+export = makeManager;

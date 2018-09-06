@@ -26,6 +26,9 @@ const makeWSPlugin = require('multiserver/plugins/ws');
 import syncingPlugin = require('./plugins/syncing');
 import manifest = require('./manifest');
 
+import makeBluetoothPlugin = require('./plugins/bluetooth-multiserv');
+import BluetoothManagerPuppet = require('./plugins/puppet-bluetooth-manager');
+
 // Hack until appDataDir plugin comes out
 const writablePath = path.join(__dirname, '..');
 const ssbPath = path.resolve(writablePath, '.ssb');
@@ -44,6 +47,7 @@ config.connections = {
   incoming: {
     net: [{scope: 'public', transform: 'shs'}],
     ws: [{scope: 'private', transform: 'noauth'}],
+    bluetooth: [{scope: 'public', transform: 'noauth'}]
   },
   outgoing: {
     net: [{transform: 'shs'}],
@@ -64,6 +68,26 @@ function noauthTransform(stack: any, cfg: any) {
   });
 }
 
+function bluetoothTransport(stack: any) {
+  console.log("hmmm");
+  console.log(BluetoothManagerPuppet);
+
+  const puppetBluetoothManager: any = BluetoothManagerPuppet();
+
+  const plugin = {
+    name: 'bluetooth',
+    create: () => {
+      return makeBluetoothPlugin({
+        bluetoothManager: puppetBluetoothManager
+      })
+    }
+  }
+
+  puppetBluetoothManager.start((err: any, address: any) => stack.multiserver.client(address));
+
+  stack.multiserver.transport(plugin);
+}
+
 function wsTransport(stack: any) {
   stack.multiserver.transport({
     name: 'ws',
@@ -76,6 +100,7 @@ function wsTransport(stack: any) {
 require('scuttlebot/index')
   .use(wsTransport)
   .use(noauthTransform)
+  .use(bluetoothTransport)
   .use(require('scuttlebot/plugins/plugins'))
   .use(require('scuttlebot/plugins/master'))
   .use(require('scuttlebot/plugins/gossip'))

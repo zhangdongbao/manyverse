@@ -1,5 +1,5 @@
 
-export default function makePlugin(opts: any) {
+function makePlugin(opts: any) {
 
   let bluetoothManager: any = opts.bluetoothManager;
 
@@ -9,13 +9,16 @@ export default function makePlugin(opts: any) {
     return opts.scope || 'private';
   }
 
-  function parse (str: string): string {
-    if (!str.startsWith("bt:")) return null;
+  function parse (addr: string): any {
+    console.log("bluetooth: parsing address :o");
+
+    if (!addr.startsWith("bt:")) return null;
     return addr.replace("bt:", "");
   }
 
-  function client (address: string, cb: any): ((): void) {
-    let duplexConnection = bluetoothManager.getConnection(addr);
+  function client (address: string, cb: any): (() => void) {
+
+    let duplexConnection = bluetoothManager.getConnection(address);
 
     if (!duplexConnection) {
       cb("No existing bluetooth connection to " + duplexConnection, null);
@@ -25,19 +28,22 @@ export default function makePlugin(opts: any) {
 
     return function() {
       // Close connection
-      bluetoothManager.disconnect(addr);
+      bluetoothManager.disconnect(address);
     }
 
   }
 
-  function server (onConnection: any): (any: void) {
+  function server (onConnection: any): (() => void) {
+    console.log("starting server :o");
+
     // The bluetooth manager calls back with a duplex stream on a new connection
     // which we can then call back onConnection with
     bluetoothManager.listenForIncomingConnections(
-      (err, connection) => onConnection(connection)
+      (err: any, connection: any) => onConnection(connection)
     )
 
     return function() {
+      console.log("Stopping server :o");
       bluetoothManager.stopServer();
     }
   }
@@ -52,4 +58,4 @@ export default function makePlugin(opts: any) {
 
 }
 
-export default makePlugin;
+export = makePlugin;

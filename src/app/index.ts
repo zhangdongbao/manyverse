@@ -105,6 +105,8 @@ import BluetoothManager = require('./bluetooth-manager');
 
 const bluetoothManager = BluetoothManager();
 
+
+
 bluetoothManager.start(null);
 
 function stuff() {
@@ -119,7 +121,7 @@ function stuff() {
     }
 
     setTimeout(stuff, 10000);
-  });
+  }).catch( () => setTimeout(stuff, 10000));
 }
 
 stuff();

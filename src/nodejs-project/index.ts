@@ -26,6 +26,7 @@ const makeWSPlugin = require('multiserver/plugins/ws');
 import syncingPlugin = require('./plugins/syncing');
 import manifest = require('./manifest');
 
+import makeBluetoothBridge = require('./plugins/bluetooth-bridge');
 import makeBluetoothPlugin = require('./plugins/bluetooth-multiserv');
 import BluetoothManagerPuppet = require('./plugins/puppet-bluetooth-manager');
 
@@ -52,6 +53,7 @@ config.connections = {
   outgoing: {
     net: [{transform: 'shs'}],
     ws: [{transform: 'noauth'}],
+    bluetooth: [{scope: 'public', transform: 'noauth'}]
   },
 };
 
@@ -69,8 +71,6 @@ function noauthTransform(stack: any, cfg: any) {
 }
 
 function bluetoothTransport(stack: any) {
-  console.log("hmmm");
-  console.log(stack);
 
   const puppetBluetoothManager: any = BluetoothManagerPuppet();
 
@@ -83,13 +83,9 @@ function bluetoothTransport(stack: any) {
     }
   }
 
-  puppetBluetoothManager.start((err: any, address: any) => {
-    console.log("abcdef: " + address);
-
-    stack.connect(address, (err: any, stream: any) => console.log("puppet client error: " + err))
-  });
-
   stack.multiserver.transport(plugin);
+
+  makeBluetoothBridge(puppetBluetoothManager, stack);
 }
 
 function wsTransport(stack: any) {

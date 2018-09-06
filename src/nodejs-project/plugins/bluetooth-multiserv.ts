@@ -17,6 +17,7 @@ function makePlugin(opts: any) {
   }
 
   function client (address: string, cb: any): (() => void) {
+    console.log("multiserv-puppet: client connection " + address)
 
     let duplexConnection = bluetoothManager.getConnection(address);
 

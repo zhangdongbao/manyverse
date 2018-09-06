@@ -57,6 +57,10 @@ function makeManager () {
       if (message.type === "listenIncoming") {
         listenForIncomingConnections(null)
       }
+      else if (message.type === "write") {
+        console.log("Got write over react bridge");
+        BluetoothSerial.writeToDevice(message.params.remoteAddress, btoa(JSON.stringify(message.params.data)));
+      }
 
     });
   }

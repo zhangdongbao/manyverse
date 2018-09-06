@@ -1,18 +1,3 @@
-
-// interface BluetoothManager {
-//
-//   start() : void;
-//   makeDeviceDiscoverable (duration: number): void,
-//   discoverUnpairedDevices() : Promise<any>,
-//   listenForIncomingConnections( (string, any): void): any,
-//   listPairedDevices(): Promise<any>,
-//   getConnection(address: string): any,
-//   connect(address: string): void,
-//   disconnect(address:string): void,
-//   stopServer(): void
-//
-// }
-
 const pull = require('pull-stream');
 const Pushable = require('pull-pushable');
 
@@ -20,12 +5,13 @@ var rn_bridge = require('rn-bridge');
 
 function makeManager () {
 
+  // A map of remote device mac address to the duplex stream for reading data data
+  // from (the source) and sending data to (the sink)
   const connections = {
 
   };
 
   let onIncomingConnection: any = null;
-  let onOutgoingConnection: any = null;
 
   function onConnect(params: any): void {
     console.log("puppet: incoming connection");
@@ -42,21 +28,22 @@ function makeManager () {
         var bridgeMsg = {
           type: "write",
           params: {
+            // the data is a byte array so marshall it to base64
             data: msg,
             remoteAddress: deviceAddress
           }
         }
 
         rn_bridge.channel.send(JSON.stringify(bridgeMsg));
-      })  // Sink to bridge!
+      })
     }
 
     connections[deviceAddress] = duplexStream;
 
     if (onIncomingConnection && params.isIncoming) {
+      // Pass the duplex stream to multiserv via the callback that was given
+      // to us in our 'server' function implementation
       onIncomingConnection(null, duplexStream);
-    } else {
-      onOutgoingConnection(null, "bt:" + deviceAddress)
     }
   }
 
@@ -68,6 +55,7 @@ function makeManager () {
     const duplexStream = connections[deviceAddress];
 
     if (duplexStream) {
+      // todo: is this enough to signal to multiserv to break the connection?
       duplexStream.source.end();
       delete connections[deviceAddress];
     }
@@ -82,6 +70,7 @@ function makeManager () {
     const duplexStream = connections[deviceAddress];
 
     if (duplexStream) {
+      // todo: is this enough to signal to multiserv to break the connection?
       duplexStream.source.end();
       delete connections[deviceAddress];
     }
@@ -101,32 +90,10 @@ function makeManager () {
 
   }
 
-  function setupEventListeners(): void {
-
-    rn_bridge.channel.on('message', (msg: any) => {
-      var message = JSON.parse(msg);
-
-      if (message.type === "connectionSuccess") {
-        onConnect(message.params);
-      } else if (message.type === "connectionLost") {
-        onConnectionLost(message.params);
-      } else if (message.type === "connectionFailed") {
-        onConnectionFailed(message.params);
-      }
-      else if (message.type === "read") {
-        onDataRead(message.params);
-      }
-
-    });
-  }
-
-  function start(onOutgoing: any): void {
-    onOutgoingConnection = onOutgoing;
-
-    setupEventListeners();
-  }
-
   function listenForIncomingConnections(cb: any): void {
+
+    // We use this callback to handle back any duplex streams for incoming
+    // connections.
     onIncomingConnection = cb;
 
     var bridgeMsg = {
@@ -137,30 +104,6 @@ function makeManager () {
     rn_bridge.channel.send(JSON.stringify(bridgeMsg));
   }
 
-  function stopServer(): void {
-    // not required for puppet
-  }
-
-  function makeDeviceDiscoverable(): void {
-    // not required for puppet
-  }
-
-  function discoverUnpairedDevices(): any {
-    // not required for puppet
-  }
-
-  function listPairedDevices(): any {
-    // not required for puppet
-  }
-
-  function connect(address: any): void {
-    // not required for puppet
-  }
-
-  function disconnect(address: any): void {
-    // not required for puppet
-  }
-
   function getConnection(address: any): any {
     console.log("Handing over connecton " + address);
 
@@ -168,15 +111,12 @@ function makeManager () {
   }
 
   return {
-    start: start,
-    makeDeviceDiscoverable: makeDeviceDiscoverable,
-    discoverUnpairedDevices: discoverUnpairedDevices,
-    listenForIncomingConnections: listenForIncomingConnections,
-    listPairedDevices: listPairedDevices,
-    getConnection: getConnection,
-    connect: connect,
-    disconnect: disconnect,
-    stopServer: stopServer
+    onConnect,
+    onConnectionFailed,
+    onConnectionLost,
+    onDataRead,
+    listenForIncomingConnections,
+    getConnection: getConnection
   }
 
 }

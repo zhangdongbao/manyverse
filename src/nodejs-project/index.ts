@@ -70,7 +70,7 @@ function noauthTransform(stack: any, cfg: any) {
 
 function bluetoothTransport(stack: any) {
   console.log("hmmm");
-  console.log(BluetoothManagerPuppet);
+  console.log(stack);
 
   const puppetBluetoothManager: any = BluetoothManagerPuppet();
 
@@ -83,7 +83,11 @@ function bluetoothTransport(stack: any) {
     }
   }
 
-  puppetBluetoothManager.start((err: any, address: any) => stack.multiserver.client(address));
+  puppetBluetoothManager.start((err: any, address: any) => {
+    console.log("abcdef: " + address);
+
+    stack.connect(address, (err: any, stream: any) => console.log("puppet client error: " + err))
+  });
 
   stack.multiserver.transport(plugin);
 }
@@ -116,7 +120,7 @@ require('scuttlebot/index')
   .use(require('ssb-query'))
   .use(require('ssb-threads'))
   .use(require('scuttlebot/plugins/invite'))
-  .use(require('scuttlebot/plugins/local'))
+  //.use(require('scuttlebot/plugins/local'))
   .use(require('scuttlebot/plugins/logging'))
   .use(require('ssb-ebt'))
   .call(null, config);

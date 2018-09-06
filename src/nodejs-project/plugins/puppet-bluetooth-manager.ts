@@ -20,8 +20,6 @@ var rn_bridge = require('rn-bridge');
 
 function makeManager () {
 
-  // const serviceUUID = "b0b2e90d-0cda-4bb0-8e4b-fb165cd17d48";
-
   const connections = {
 
   };
@@ -30,6 +28,9 @@ function makeManager () {
   let onOutgoingConnection: any = null;
 
   function onConnect(params: any): void {
+    console.log("puppet: incoming connection");
+    console.log(params);
+
     const deviceAddress = params.remoteAddress;
 
     // Source: reading from the remote device
@@ -60,6 +61,8 @@ function makeManager () {
   }
 
   function onConnectionFailed(params: any): void {
+    console.log("puppet: failed connection");
+
     const deviceAddress = params.remoteAddress;
 
     const duplexStream = connections[deviceAddress];
@@ -72,6 +75,8 @@ function makeManager () {
   }
 
   function onConnectionLost(params: any): void {
+    console.log("puppet: connection lost");
+    console.log(params);
     const deviceAddress = params.remoteAddress;
 
     const duplexStream = connections[deviceAddress];
@@ -157,6 +162,8 @@ function makeManager () {
   }
 
   function getConnection(address: any): any {
+    console.log("Handing over connecton " + address);
+
     return connections[address];
   }
 

@@ -11,6 +11,7 @@ import com.bitgo.randombytes.RandomBytesPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.reactnativenavigation.NavigationApplication;
+import com.rusel.RCTBluetoothSerial.RCTBluetoothSerialPackage;
 import com.staltz.reactnativeandroidlocalnotification.NotificationPackage;
 import com.staltz.reactnativehasinternet.HasInternetPackage;
 import com.devstepbcn.wifi.AndroidWifiPackage;
@@ -41,6 +42,7 @@ public class MainApplication extends NavigationApplication {
     // Add additional packages you require here
     // No need to add RnnPackage and MainReactPackage
     return Arrays.<ReactPackage>asList(new MainReactPackage(),
+            new RCTBluetoothSerialPackage(),
             new HasInternetPackage(),
             new AndroidWifiPackage(), new RNFSPackage(),
         new RandomBytesPackage(), new RNNodeJsMobilePackage(), new ReactNativeDialogsPackage(),

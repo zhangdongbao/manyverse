@@ -105,6 +105,10 @@ android {
        targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    lintOptions {
+        abortOnError false
+    }
+
     defaultConfig {
         applicationId "com.mmmmm"
         minSdkVersion 19
@@ -129,6 +133,8 @@ android {
                 keyPassword MYAPP_RELEASE_KEY_PASSWORD
             }
         }
+
+
     }
 
     splits {
@@ -164,6 +170,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-bluetooth-serial')
     implementation "ch.acra:acra-core:5.0.0"
     implementation "ch.acra:acra-mail:5.0.0"
     implementation "ch.acra:acra-dialog:5.0.0"

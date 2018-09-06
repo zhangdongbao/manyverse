@@ -100,6 +100,30 @@ export const layout = {
   },
 };
 
+
+import BluetoothManager = require('./bluetooth-manager');
+
+const bluetoothManager = BluetoothManager();
+
+bluetoothManager.start(null);
+
+function stuff() {
+  bluetoothManager.discoverUnpairedDevices().then((devices: any) => {
+    console.log("Devices...");
+    console.log(devices);
+
+    if (devices.find( (device: any) => device.remoteAddress === "7C:E9:D3:BB:72:0D")) {
+      console.log("Making outgoing connection...")
+      bluetoothManager.connect("7C:E9:D3:BB:72:0D")
+      return;
+    }
+
+    setTimeout(stuff, 10000);
+  });
+}
+
+stuff();
+
 export const defaultNavOptions = {
   statusBar: {
     visible: true,

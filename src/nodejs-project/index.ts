@@ -26,7 +26,8 @@ const makeWSPlugin = require('multiserver/plugins/ws');
 import syncingPlugin = require('./plugins/syncing');
 import manifest = require('./manifest');
 
-import makeBluetoothPlugin = require('./plugins/bluetooth-multiserv');
+const makeBluetoothPlugin = require('multiserver-bluetooth');
+
 import BluetoothManagerPuppet = require('./plugins/puppet-bluetooth-manager');
 
 var rn_bridge = require('rn-bridge');

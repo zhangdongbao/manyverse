@@ -11,6 +11,12 @@ function makeManager () {
 
   };
 
+  // A map of devices we're awaiting an outgoing connection for. Key: device address,
+  // value: errBack to give the connection.
+  const awaitingConnection = {
+
+  };
+
   let onIncomingConnection: any = null;
 
   function onConnect(params: any): void {
@@ -44,22 +50,28 @@ function makeManager () {
       // Pass the duplex stream to multiserv via the callback that was given
       // to us in our 'server' function implementation
       onIncomingConnection(null, duplexStream);
+    } else {
+      const awaiting = awaitingConnection[params.remoteAddress];
+      if (!awaiting) {
+        console.log("Unexpectedly got a connection to a device we were not waiting on.");
+      }
+
+      connections[deviceAddress] = duplexStream;
+      awaiting(null, duplexStream);
+
+      delete awaitingConnection[deviceAddress];
     }
   }
 
   function onConnectionFailed(params: any): void {
-    console.log("puppet: failed connection");
+    console.log("puppet: failed connection: " + params.remoteAddress);
 
     const deviceAddress = params.remoteAddress;
+    const awaiting = awaitingConnection[deviceAddress];
 
-    const duplexStream = connections[deviceAddress];
+    awaiting("Could not connect to bluetooth address: " + deviceAddress);
 
-    if (duplexStream) {
-      // todo: is this enough to signal to multiserv to break the connection?
-      duplexStream.source.end();
-      delete connections[deviceAddress];
-    }
-
+    delete awaitingConnection[deviceAddress];
   }
 
   function onConnectionLost(params: any): void {
@@ -104,19 +116,45 @@ function makeManager () {
     rn_bridge.channel.send(JSON.stringify(bridgeMsg));
   }
 
-  function getConnection(address: any): any {
-    console.log("Handing over connecton " + address);
+  function connect(address: any, cb: any) {
 
-    return connections[address];
+    // Store that we're awaiting a connection event to come back over the bridge
+    awaitingConnection[address] = cb;
+
+    var bridgeMsg = {
+      type: "connectTo",
+      params: {
+        remoteAddress: address
+      }
+    }
+
+    rn_bridge.channel.send(JSON.stringify(bridgeMsg));
   }
 
+  function listenForBridgeEvents() {
+
+    rn_bridge.channel.on('message', (msg: any) => {
+      var message = JSON.parse(msg);
+
+      if (message.type === "connectionSuccess") {
+        onConnect(message.params);
+      } else if (message.type === "connectionLost") {
+        onConnectionLost(message.params);
+      } else if (message.type === "connectionFailed") {
+        onConnectionFailed(message.params);
+      }
+      else if (message.type === "read") {
+        onDataRead(message.params);
+      }
+
+    });
+  }
+
+  listenForBridgeEvents();
+
   return {
-    onConnect,
-    onConnectionFailed,
-    onConnectionLost,
-    onDataRead,
-    listenForIncomingConnections,
-    getConnection: getConnection
+    connect,
+    listenForIncomingConnections
   }
 
 }

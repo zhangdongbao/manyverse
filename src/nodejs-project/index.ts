@@ -26,9 +26,10 @@ const makeWSPlugin = require('multiserver/plugins/ws');
 import syncingPlugin = require('./plugins/syncing');
 import manifest = require('./manifest');
 
-import makeBluetoothBridge = require('./plugins/bluetooth-bridge');
 import makeBluetoothPlugin = require('./plugins/bluetooth-multiserv');
 import BluetoothManagerPuppet = require('./plugins/puppet-bluetooth-manager');
+
+var rn_bridge = require('rn-bridge');
 
 // Hack until appDataDir plugin comes out
 const writablePath = path.join(__dirname, '..');
@@ -85,7 +86,17 @@ function bluetoothTransport(stack: any) {
 
   stack.multiserver.transport(plugin);
 
-  makeBluetoothBridge(puppetBluetoothManager, stack);
+  rn_bridge.channel.on('message', (msg: any) => {
+    var message = JSON.parse(msg);
+
+    if (message.type === "msClient") {
+      const address: any = message.params.remoteAddress;
+
+      // The mobile app has told us it wants to try to connect to a bluetooth address
+      stack.connect("bt:" + address, (err: any, stream: any) => console.log("Err on connect b/t: " + err));
+    }
+  });
+
 }
 
 function wsTransport(stack: any) {

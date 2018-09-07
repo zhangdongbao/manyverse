@@ -4,6 +4,7 @@ var BluetoothSerial = require('react-native-bluetooth-serial');
 
 const serviceUUID = "b0b2e90d-0cda-4bb0-8e4b-fb165cd17d48";
 
+// note: might need completely refactored
 function makeManager () {
 
   function onConnect(params: any): void {
@@ -32,7 +33,8 @@ function makeManager () {
       params: params
     }
 
-      nodejs.channel.send(JSON.stringify(bridgeMsg));
+    console.log("Sending connection lost to: " + params.remoteAddress + " over bridge.");
+    nodejs.channel.send(JSON.stringify(bridgeMsg));
   }
 
   function onDataRead(params: any): void {
@@ -60,13 +62,13 @@ function makeManager () {
       else if (message.type === "write") {
         console.log("Got write over react bridge");
         BluetoothSerial.writeToDevice(message.params.remoteAddress, btoa(JSON.stringify(message.params.data)));
+      } else if (message.type === "connectTo") {
+        console.log("Asked to connect to: " + message.params.remoteAddress + " over bridge.");
+        const remoteAddress: any = message.params.remoteAddress
+        connect(remoteAddress);
       }
 
     });
-  }
-
-  function start(onOutgoing: any): void {
-    setupEventListeners();
   }
 
   function listenForIncomingConnections(cb: any): void {
@@ -102,19 +104,14 @@ function makeManager () {
     BluetoothSerial.connect(address, "b0b2e90d-0cda-4bb0-8e4b-fb165cd17d48");
   }
 
-  function disconnect(address: any): void {
-    // todo
-  }
+  setupEventListeners();
 
   return {
-    start: start,
     makeDeviceDiscoverable: makeDeviceDiscoverable,
     discoverUnpairedDevices: discoverUnpairedDevices,
     listenForIncomingConnections: listenForIncomingConnections,
     listPairedDevices: listPairedDevices,
     getConnection: getConnection,
-    connect: connect,
-    disconnect: disconnect,
     stopServer: stopServer
   }
 

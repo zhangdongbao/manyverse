@@ -34,8 +34,8 @@ function makeManager () {
         var bridgeMsg = {
           type: "write",
           params: {
-            // the data is a byte array so decode to UTF-8 string to send over the bridge
-            data: msg.toString(),
+            // the data is a byte array so encode as a base64 string to send over bridge
+            data: msg.toString('base64'),
             remoteAddress: deviceAddress
           }
         }
@@ -95,7 +95,8 @@ function makeManager () {
     const duplexStream = connections[deviceAddress];
 
     if (duplexStream) {
-      duplexStream.source.push(new Buffer(data));
+      // Decode data from base64 string to buffer
+      duplexStream.source.push(Buffer.from(data, 'base64'));
     } else {
       console.log("Unexpectedly didn't find address in device map.")
     }

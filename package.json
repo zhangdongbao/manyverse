@@ -59,7 +59,7 @@
     "react-native": "0.55.4",
     "react-native-android-local-notification": "1.1.0",
     "react-native-android-wifi": "0.0.34",
-    "react-native-bluetooth-serial": "happy0/5b56b5faefe57ce9e6a98ef973b4fcda71e4e8c5",
+    "react-native-bluetooth-serial": "happy0/react-native-bluetooth-serial#ca05c8e1292163a4406841cba9ab04bcf6cd5a8f",
     "react-native-dialogs": "0.0.20",
     "react-native-floating-action": "^1.13.0",
     "react-native-has-internet": "1.0.1",

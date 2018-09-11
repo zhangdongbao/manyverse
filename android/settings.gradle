@@ -1,6 +1,6 @@
 rootProject.name = 'MMMMM'
 include ':react-native-bluetooth-serial'
-project(':react-native-bluetooth-serial').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-bluetooth-serial/android')
+project(':react-native-bluetooth-serial').projectDir = new File(rootProject.projectDir, '../node_modules/@happy0/react-native-bluetooth-serial/android')
 include ':nodejs-mobile-react-native'
 project(':nodejs-mobile-react-native').projectDir = new File(rootProject.projectDir, '../node_modules/nodejs-mobile-react-native/android')
 include ':react-native-dialogs'

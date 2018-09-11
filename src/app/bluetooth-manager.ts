@@ -1,6 +1,6 @@
 var nodejs = require('nodejs-mobile-react-native');
 
-var BluetoothSerial = require('react-native-bluetooth-serial');
+var BluetoothSerial = require('@happy0/react-native-bluetooth-serial');
 
 const serviceUUID = "b0b2e90d-0cda-4bb0-8e4b-fb165cd17d48";
 
@@ -52,6 +52,8 @@ function makeManager () {
     BluetoothSerial.on("connectionLost", onConnectionLost);
     BluetoothSerial.on("connectionFailed", onConnectionFailed);
     BluetoothSerial.on("read", onDataRead);
+
+
 
     nodejs.channel.addListener('message', (msg: any) => {
       var message = JSON.parse(msg);

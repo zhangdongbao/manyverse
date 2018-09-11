@@ -1,6 +1,7 @@
-var nodejs = require('nodejs-mobile-react-native');
-
-var BluetoothSerial = require('@happy0/react-native-bluetooth-serial');
+const nodejs = require('nodejs-mobile-react-native');
+const BluetoothSerial = require('@happy0/react-native-bluetooth-serial');
+const pull = require('pull-stream');
+const Pushable = require ('pull-pushable');
 
 const serviceUUID = "b0b2e90d-0cda-4bb0-8e4b-fb165cd17d48";
 
@@ -53,7 +54,7 @@ function makeManager () {
     BluetoothSerial.on("connectionFailed", onConnectionFailed);
     BluetoothSerial.on("read", onDataRead);
 
-
+    var syncedWriteSource = Pushable();
 
     nodejs.channel.addListener('message', (msg: any) => {
       var message = JSON.parse(msg);
@@ -64,7 +65,11 @@ function makeManager () {
       else if (message.type === "write") {
         console.log("Got write over react bridge");
 
-        BluetoothSerial.writeToDevice(message.params.remoteAddress, message.params.data);
+        syncedWriteSource.push({
+          remoteAddress: message.params.remoteAddress,
+          data: message.params.data
+        })
+
       } else if (message.type === "connectTo") {
         console.log("Asked to connect to: " + message.params.remoteAddress + " over bridge.");
         const remoteAddress: any = message.params.remoteAddress
@@ -72,6 +77,14 @@ function makeManager () {
       }
 
     });
+
+    // Don't give the next write to the native bluetooth socket output stream until the last one was fully
+    // written.
+    pull(syncedWriteSource, pull.asyncMap(syncedWrite), pull.drain());
+  }
+
+  function syncedWrite(message: any, cb: any) {
+    BluetoothSerial.writeToDevice(message.remoteAddress, message.data, (wasOk: any) => cb(null, wasOk));
   }
 
   function listenForIncomingConnections(cb: any): void {

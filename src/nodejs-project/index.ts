@@ -44,9 +44,11 @@ config.manifest = manifest;
 config.friends.hops = 2;
 config.connections = {
   incoming: {
+    ws: [{scope: 'private', transform: 'noauth'}],
     bluetooth: [{scope: 'public', transform: 'noauth'}]
   },
   outgoing: {
+    ws: [{scope: 'private', transform: 'noauth'}],
     bluetooth: [{scope: 'public', transform: 'noauth'}]
   },
 };

@@ -44,13 +44,9 @@ config.manifest = manifest;
 config.friends.hops = 2;
 config.connections = {
   incoming: {
-    net: [{scope: 'public', transform: 'shs'}],
-    ws: [{scope: 'private', transform: 'noauth'}],
     bluetooth: [{scope: 'public', transform: 'noauth'}]
   },
   outgoing: {
-    net: [{transform: 'shs'}],
-    ws: [{transform: 'noauth'}],
     bluetooth: [{scope: 'public', transform: 'noauth'}]
   },
 };
@@ -69,6 +65,7 @@ function noauthTransform(stack: any, cfg: any) {
 }
 
 function wsTransport(stack: any) {
+
   stack.multiserver.transport({
     name: 'ws',
     create: () => {

@@ -112,9 +112,9 @@ android {
     defaultConfig {
         applicationId "com.mmmmm"
         minSdkVersion 19
-        targetSdkVersion 23
-        versionCode 22
-        versionName "0.0.18-alpha"
+        targetSdkVersion 26
+        versionCode 23
+        versionName "0.0.19-alpha"
         missingDimensionStrategy "RNN.reactNativeVersion", "reactNative55"
         ndk {
             abiFilters "armeabi-v7a" // , "x86"

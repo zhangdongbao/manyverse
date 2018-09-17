@@ -20,7 +20,7 @@
     "ssb-config": "2.3.0",
     "ssb-about": "0.1.x",
     "ssb-backlinks": "0.7.3",
-    "ssb-mobile-bluetooth": "1.0.1",
+    "ssb-mobile-bluetooth": "happy0/ssb-mobile-bluetooth#ec728dfd06decd2354616fb70a234a0df9a1a56d",
     "ssb-blobs": "1.1.5",
     "ssb-contacts": "0.0.x",
     "ssb-ebt": "5.2.2",

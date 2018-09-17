@@ -102,34 +102,8 @@ export const layout = {
 
 
 import BluetoothManager = require('./bluetooth-manager');
-const bluetoothManager = BluetoothManager();
+BluetoothManager();
 
-var nodejs = require('nodejs-mobile-react-native');
-
-function stuff() {
-  bluetoothManager.discoverUnpairedDevices().then((devices: any) => {
-    console.log("Devices...");
-    console.log(devices);
-
-    if (devices.find( (device: any) => device.remoteAddress === "7C:E9:D3:BB:72:0D")) {
-      console.log("Making outgoing connection...")
-
-      const bridgeMsg: any = {
-        type: "msClient",
-        params: {
-          remoteAddress: "7C:E9:D3:BB:72:0D"
-        }
-      }
-
-      nodejs.channel.send(JSON.stringify(bridgeMsg));
-      return;
-    }
-
-    setTimeout(stuff, 10000);
-  }).catch( () => setTimeout(stuff, 10000));
-}
-
-stuff();
 
 export const defaultNavOptions = {
   statusBar: {

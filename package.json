@@ -23,7 +23,7 @@
   "dependencies": {
     "@cycle/isolate": "3.4",
     "@cycle/react": "1.3.4",
-    "@happy0/react-native-bluetooth-serial": "1.0.3-rc1",
+    "@happy0/react-native-bluetooth-serial": "happy0/react-native-bluetooth-serial#fae46765097cf53a6196be7f47c67d3dd46490c4",
     "@staltz/rn-viewpager": "1.2.5",
     "@types/react": "16.4.6",
     "@types/react-native": "0.55.26",

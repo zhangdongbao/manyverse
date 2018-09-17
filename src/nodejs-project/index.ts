@@ -68,6 +68,12 @@ function noauthTransform(stack: any, cfg: any) {
 
 function wsTransport(stack: any) {
 
+  // stack.publish({
+  //   type: 'contact',
+  //   contact: "@RJ09Kfs3neEZPrbpbWVDxkN92x9moe3aPusOMOc4S2I=.ed25519",
+  //   following: true 
+  // }, (err: any) => console.log("Follow err: " + err) );
+
   stack.multiserver.transport({
     name: 'ws',
     create: () => {

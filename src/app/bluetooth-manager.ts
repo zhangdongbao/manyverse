@@ -65,9 +65,25 @@ function makeManager () {
     return BluetoothSerial.list();
   }
 
+  function connect(address: string, publicKey?: string) {
+    const bridgeMsg: any = {
+      type: "msClient",
+      params: {
+        remoteAddress: address,
+        publicKey: publicKey
+      }
+    }
+
+    console.log("Connecting...");
+    console.log(bridgeMsg);
+
+    nodejs.channel.send(JSON.stringify(bridgeMsg));
+  }
+
   setupEventListeners();
 
   return {
+    connect: connect,
     makeDeviceDiscoverable: makeDeviceDiscoverable,
     discoverUnpairedDevices: discoverUnpairedDevices,
     listenForIncomingConnections: listenForIncomingConnections,

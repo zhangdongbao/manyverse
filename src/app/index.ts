@@ -102,7 +102,9 @@ export const layout = {
 
 
 import BluetoothManager = require('./bluetooth-manager');
-BluetoothManager();
+
+//var manager = BluetoothManager();
+//manager.connect("7C:E9:D3:BB:72:0D")
 
 
 export const defaultNavOptions = {

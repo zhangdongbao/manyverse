@@ -25,6 +25,8 @@ cd ./nodejs-assets/nodejs-project;
 $(npm bin)/noderify \
   --replace.bindings=bindings-noderify-nodejs-mobile \
   --replace.node-extend=xtend \
+  --replace.chloride=sodium-chloride-native \
+  --replace.sodium-native=sodium-native-no-prebuild \
   --replace.utp-native=utp-native-no-prebuild \
   --filter=rn-bridge \
   index.js > _index.js;

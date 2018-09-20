@@ -20,6 +20,8 @@
     "pull-file": "1.1.0",
     "pull-thenable": "1.0.0",
     "scuttlebot": "12.0.1",
+    "sodium-chloride-native": "1.10.0",
+    "sodium-native-no-prebuild": "2.2.1-1",
     "ssb-config": "2.3.1",
     "ssb-about": "~0.1.2",
     "ssb-backlinks": "0.7.3",

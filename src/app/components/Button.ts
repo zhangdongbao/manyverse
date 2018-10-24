@@ -70,7 +70,7 @@ export const styles = StyleSheet.create({
 
   textStrong: {
     ...baseTextStyle,
-    color: Palette.white,
+    color: Palette.colors.white,
   },
 });
 

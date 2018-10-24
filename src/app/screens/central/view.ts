@@ -75,7 +75,7 @@ function renderConnectionsIcon(isSyncing: boolean) {
             animating: true,
             size: 19,
             style: styles.syncingProgressBar,
-            color: Palette.indigo9,
+            color: Palette.colors.indigo9,
           })
         : null as any,
     ]),
@@ -90,7 +90,7 @@ function renderConnectionsIcon(isSyncing: boolean) {
             animating: true,
             size: 19,
             style: styles.syncingProgressBar,
-            color: Palette.blue4,
+            color: Palette.colors.blue4,
           })
         : null as any,
     ]),

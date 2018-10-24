@@ -78,7 +78,7 @@ function ReplyInput(state: State) {
         editable: state.replyEditable,
         placeholder: 'Comment',
         placeholderTextColor: Palette.brand.textVeryWeak,
-        selectionColor: Palette.indigo3,
+        selectionColor: Palette.colors.indigo3,
         underlineColorAndroid: Palette.brand.voidBackground,
         style: styles.replyInput,
       }),

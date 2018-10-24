@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   blockquote: {
     backgroundColor: Palette.brand.textWeakBackground,
     borderLeftWidth: 3,
-    borderLeftColor: Palette.gray5,
+    borderLeftColor: Palette.colors.gray5,
     paddingLeft: Dimens.horizontalSpaceSmall,
     paddingRight: 1,
   },
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
 
   horizontalLine: {
-    backgroundColor: Palette.gray4,
+    backgroundColor: Palette.colors.gray4,
     height: 2,
     marginTop: Dimens.verticalSpaceSmall,
     marginBottom: Dimens.verticalSpaceSmall,
@@ -214,7 +214,7 @@ const renderers = {
         style: {
           marginTop: Dimens.verticalSpaceSmall,
           marginBottom: Dimens.verticalSpaceSmall,
-          backgroundColor: Palette.gray1,
+          backgroundColor: Palette.colors.gray1,
           width,
           height,
         },

@@ -126,13 +126,13 @@ export const defaultNavOptions = {
     height: 0,
     borderHeight: 0,
     elevation: 0,
-    buttonColor: Palette.white,
+    buttonColor: Palette.colors.white,
     background: {
       color: Palette.brand.background,
     },
     title: {
       text: '',
-      color: Palette.white,
+      color: Palette.colors.white,
       fontSize: Typography.fontSizeLarge,
     },
   },

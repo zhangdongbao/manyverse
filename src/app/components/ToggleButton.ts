@@ -41,7 +41,7 @@ export const styles = StyleSheet.create({
 
   containerMaybe: {
     ...baseContainerStyle,
-    backgroundColor: Palette.gray6,
+    backgroundColor: Palette.colors.gray6,
   },
 
   containerToggled: {
@@ -56,7 +56,7 @@ export const styles = StyleSheet.create({
 
   textToggled: {
     ...baseTextStyle,
-    color: Palette.white,
+    color: Palette.colors.white,
   },
 });
 

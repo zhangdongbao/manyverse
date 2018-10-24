@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
     backgroundColor: Palette.brand.textBackground,
     paddingLeft: Dimensions.horizontalSpaceBig,
     borderTopWidth: 1,
-    borderTopColor: Palette.gray1,
+    borderTopColor: Palette.colors.gray1,
     flexDirection: 'row',
     alignItems: 'center',
   },

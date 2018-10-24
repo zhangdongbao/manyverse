@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignSelf: 'stretch',
-    backgroundColor: Palette.brand.voidBackground,
+    backgroundColor: Palette.backgroundVoid,
   },
 
   loading: {
@@ -41,10 +41,10 @@ export const styles = StyleSheet.create({
   },
 
   replyRow: {
-    backgroundColor: Palette.brand.textBackground,
+    backgroundColor: Palette.backgroundText,
     paddingLeft: Dimensions.horizontalSpaceBig,
     borderTopWidth: 1,
-    borderTopColor: Palette.colors.gray1,
+    borderTopColor: Palette.backgroundVoidWeak,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -70,7 +70,7 @@ export const styles = StyleSheet.create({
 
   replyInput: {
     fontSize: Typography.fontSizeNormal,
-    color: Palette.brand.text,
+    color: Palette.text,
     maxHeight: 136, // approx. 6.5 lines of text
   },
 

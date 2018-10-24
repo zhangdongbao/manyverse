@@ -37,7 +37,7 @@ import Avatar from './Avatar';
 export const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    backgroundColor: Palette.brand.textBackground,
+    backgroundColor: Palette.backgroundText,
   },
 
   peer: {
@@ -65,7 +65,7 @@ export const styles = StyleSheet.create({
     fontSize: Typography.fontSizeNormal,
     fontWeight: 'bold',
     fontFamily: Typography.fontFamilyReadableText,
-    color: Palette.brand.text,
+    color: Palette.text,
     minWidth: 120,
   },
 
@@ -76,7 +76,7 @@ export const styles = StyleSheet.create({
   peerModeText: {
     fontSize: Typography.fontSizeSmall,
     fontFamily: Typography.fontFamilyReadableText,
-    color: Palette.brand.textWeak,
+    color: Palette.textWeak,
     marginLeft: Dimensions.horizontalSpaceSmall,
   },
 });
@@ -127,7 +127,7 @@ export default class ConnectionsList extends PureComponent<Props> {
     const peerMode = h(View, {style: styles.peerMode}, [
       h(Icon, {
         size: Dimensions.iconSizeSmall,
-        color: Palette.brand.textWeak,
+        color: Palette.textWeak,
         name: peerModeIcon(peer.source),
       }),
       h(Text, {style: styles.peerModeText}, peerModeTitle(peer.source)),

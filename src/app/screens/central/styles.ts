@@ -23,7 +23,7 @@ import {Dimensions} from '../../global-styles/dimens';
 import {Typography} from '../../global-styles/typography';
 
 const _tabItem = {
-  backgroundColor: Palette.brand.background,
+  backgroundColor: Palette.backgroundBrand,
   paddingTop: Dimensions.verticalSpaceNormal,
   paddingBottom: Dimensions.verticalSpaceNormal,
 };
@@ -31,14 +31,14 @@ const _tabItem = {
 export const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: Palette.colors.white,
+    backgroundColor: Palette.backgroundVoid,
   },
 
   header: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: Palette.brand.background,
+    backgroundColor: Palette.backgroundBrand,
     minHeight: Dimensions.toolbarAndroidHeight,
   },
 
@@ -52,7 +52,7 @@ export const styles = StyleSheet.create({
   headerTitle: {
     marginLeft: Dimensions.horizontalSpaceNormal,
     fontFamily: Typography.fontFamilyReadableText,
-    color: Palette.colors.white,
+    color: Palette.foregroundBrand,
     fontSize: Typography.fontSizeLarge,
     fontWeight: 'bold',
   },
@@ -60,7 +60,7 @@ export const styles = StyleSheet.create({
   indicatorViewPager: {
     flex: 1,
     flexDirection: 'column-reverse',
-    backgroundColor: Palette.brand.backgroundDarker,
+    backgroundColor: Palette.backgroundBrandStrong,
   },
 
   tabItem: _tabItem,
@@ -68,11 +68,11 @@ export const styles = StyleSheet.create({
   tabItemSelected: {
     ..._tabItem,
     borderBottomWidth: 4,
-    borderBottomColor: Palette.brand.backgroundLighterContrast,
+    borderBottomColor: Palette.backgroundBrandWeaker,
   },
 
   pageContainer: {
-    backgroundColor: Palette.brand.voidBackground,
+    backgroundColor: Palette.backgroundVoid,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -84,7 +84,7 @@ export const styles = StyleSheet.create({
   },
 
   updatesDot: {
-    backgroundColor: Palette.colors.white,
+    backgroundColor: Palette.foregroundBrand,
     width: 7,
     height: 7,
     position: 'absolute',
@@ -109,21 +109,21 @@ export const styles = StyleSheet.create({
 export const iconProps = {
   headerIcon: {
     size: Dimensions.iconSizeNormal,
-    color: Palette.colors.white,
+    color: Palette.foregroundBrand,
   },
 
   tab: {
     size: Dimensions.iconSizeNormal,
-    color: Palette.brand.backgroundDarkerContrast,
+    color: Palette.backgroundBrandStronger,
   },
 
   tabSelected: {
     size: Dimensions.iconSizeNormal,
-    color: Palette.colors.white,
+    color: Palette.foregroundBrand,
   },
 };
 
 export const topBarTitle = {
-  color: Palette.colors.white,
+  color: Palette.foregroundBrand,
   fontSize: Typography.fontSizeLarge,
 };

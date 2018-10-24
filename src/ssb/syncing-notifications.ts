@@ -55,7 +55,7 @@ function showNotification(data: Response): Promise<void> {
     sound: null,
     vibrate: null,
     lights: null,
-    color: Palette.brand.background,
+    color: Palette.backgroundBrand,
     category: 'progress',
     autoClear: true,
   });

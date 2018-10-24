@@ -203,8 +203,6 @@ export const Palette = {
   textBrand: indigo8,
   textNegative: red6,
   textHacker: teal3,
-  textBackground: white,
-  textWeakBackground: gray1,
 
   colors: {
     white,

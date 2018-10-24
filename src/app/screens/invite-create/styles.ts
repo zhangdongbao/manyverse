@@ -23,12 +23,12 @@ import {Dimensions} from '../../global-styles/dimens';
 import {Typography} from '../../global-styles/typography';
 
 export const navigatorStyle = {
-  statusBarColor: Palette.brand.backgroundDarker,
-  navBarBackgroundColor: Palette.brand.background,
-  navBarTextColor: Palette.colors.white,
+  statusBarColor: Palette.backgroundBrandStrong,
+  navBarBackgroundColor: Palette.backgroundBrand,
+  navBarTextColor: Palette.foregroundBrand,
   navBarTextFontSize: Typography.fontSizeLarge,
   navBarTextFontFamily: Typography.fontFamilyReadableText,
-  navBarButtonColor: Palette.colors.white,
+  navBarButtonColor: Palette.foregroundBrand,
   topBarElevationShadowEnabled: false,
   navBarTextFontBold: true,
 };
@@ -45,7 +45,7 @@ export const styles = StyleSheet.create({
     alignSelf: 'stretch',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    backgroundColor: Palette.brand.textBackground,
+    backgroundColor: Palette.backgroundText,
     paddingHorizontal: Dimensions.horizontalSpaceBig,
   },
 
@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
     paddingTop: Dimensions.verticalSpaceNormal,
     fontSize: Typography.fontSizeSmall,
     fontFamily: Typography.fontFamilyReadableText,
-    color: Palette.brand.textWeak,
+    color: Palette.textWeak,
     textAlign: 'center',
   },
 
@@ -69,8 +69,8 @@ export const styles = StyleSheet.create({
     fontFamily: Typography.fontFamilyMonospace,
     textAlign: 'left',
     textAlignVertical: 'top',
-    color: Palette.brand.textWeak,
-    backgroundColor: Palette.brand.textWeakBackground,
+    color: Palette.textWeak,
+    backgroundColor: Palette.backgroundTextWeak,
     paddingHorizontal: 4,
     paddingVertical: 3,
     borderRadius: 2,

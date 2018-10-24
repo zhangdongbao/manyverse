@@ -29,11 +29,11 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignSelf: 'stretch',
-    backgroundColor: Palette.brand.textBackground,
+    backgroundColor: Palette.backgroundText,
   },
 
   cover: {
-    backgroundColor: Palette.brand.background,
+    backgroundColor: Palette.backgroundBrand,
     height: avatarSizeHalf,
     zIndex: 10,
   },
@@ -46,7 +46,7 @@ export const styles = StyleSheet.create({
     paddingBottom: Dimensions.verticalSpaceNormal,
     paddingLeft: Dimensions.horizontalSpaceBig,
     paddingRight: Dimensions.horizontalSpaceBig,
-    backgroundColor: Palette.brand.textBackground,
+    backgroundColor: Palette.backgroundText,
   },
 
   avatarTouchable: {
@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
 
   label: {
     fontSize: Typography.fontSizeSmall,
-    color: Palette.brand.textWeak,
+    color: Palette.textWeak,
     marginLeft: 3,
   },
 

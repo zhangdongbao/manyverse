@@ -23,12 +23,12 @@ import {Dimensions} from '../../global-styles/dimens';
 import {Typography} from '../../global-styles/typography';
 
 export const navigatorStyle = {
-  statusBarColor: Palette.brand.backgroundDarker,
-  navBarBackgroundColor: Palette.brand.background,
-  navBarTextColor: Palette.colors.white,
+  statusBarColor: Palette.backgroundBrandStrong,
+  navBarBackgroundColor: Palette.backgroundBrand,
+  navBarTextColor: Palette.foregroundBrand,
   navBarTextFontSize: Typography.fontSizeLarge,
   navBarTextFontFamily: Typography.fontFamilyReadableText,
-  navBarButtonColor: Palette.colors.white,
+  navBarButtonColor: Palette.foregroundBrand,
   topBarElevationShadowEnabled: false,
   navBarTextFontBold: true,
 };
@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
     flexDirection: 'column',
-    backgroundColor: Palette.brand.textBackground,
+    backgroundColor: Palette.backgroundText,
     paddingHorizontal: Dimensions.horizontalSpaceBig,
   },
 
@@ -58,6 +58,6 @@ export const styles = StyleSheet.create({
     fontFamily: Typography.fontFamilyMonospace,
     textAlign: 'left',
     textAlignVertical: 'top',
-    color: Palette.brand.text,
+    color: Palette.text,
   },
 });

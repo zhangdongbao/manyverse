@@ -34,7 +34,7 @@ export const styles = StyleSheet.create({
     height: Dimensions.avatarSizeNormal,
     width: Dimensions.avatarSizeNormal,
     borderRadius: Math.ceil(Dimensions.avatarSizeNormal * 0.5),
-    backgroundColor: Palette.colors.gray1,
+    backgroundColor: Palette.backgroundVoidWeak,
     marginRight: Dimensions.horizontalSpaceSmall,
     marginBottom: Dimensions.verticalSpaceSmall,
   },
@@ -49,13 +49,13 @@ export const styles = StyleSheet.create({
     height: 16,
     marginTop: 3,
     marginBottom: 10,
-    backgroundColor: Palette.colors.gray1,
+    backgroundColor: Palette.backgroundVoidWeak,
   },
 
   headerTimestamp: {
     width: 60,
     height: 16,
-    backgroundColor: Palette.colors.gray1,
+    backgroundColor: Palette.backgroundVoidWeak,
   },
 
   body: {
@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
     height: 16,
     marginTop: 10,
     marginBottom: 6,
-    backgroundColor: Palette.colors.gray1,
+    backgroundColor: Palette.backgroundVoidWeak,
   },
 
   footer: {
@@ -86,14 +86,14 @@ export const styles = StyleSheet.create({
     height: 20,
     width: 20,
     borderRadius: 5,
-    backgroundColor: Palette.colors.gray1,
+    backgroundColor: Palette.backgroundVoidWeak,
   },
 
   footerButtonLabel: {
     marginLeft: Dimensions.horizontalSpaceSmall,
     width: 34,
     height: Dimensions.verticalSpaceBig,
-    backgroundColor: Palette.colors.gray1,
+    backgroundColor: Palette.backgroundVoidWeak,
   },
 });
 

@@ -26,11 +26,11 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignSelf: 'stretch',
-    backgroundColor: Palette.colors.white,
+    backgroundColor: Palette.backgroundText,
   },
 
   header: {
-    backgroundColor: Palette.brand.background,
+    backgroundColor: Palette.backgroundBrand,
     minHeight: 109,
     paddingTop: Dimensions.verticalSpaceBig,
     paddingLeft: Dimensions.horizontalSpaceBig,
@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
 
   noAuthorName: {
     fontSize: Typography.fontSizeNormal,
-    color: Palette.colors.white,
+    color: Palette.foregroundBrand,
     fontFamily: Typography.fontFamilyReadableText,
     fontWeight: 'bold',
     fontStyle: 'italic',
@@ -53,19 +53,19 @@ export const styles = StyleSheet.create({
   authorName: {
     fontFamily: Typography.fontFamilyReadableText,
     fontSize: Typography.fontSizeNormal,
-    color: Palette.colors.white,
+    color: Palette.foregroundBrand,
     fontWeight: 'bold',
   },
 
   authorId: {
     fontSize: Typography.fontSizeSmall,
     fontFamily: Typography.fontFamilyReadableText,
-    color: Palette.colors.indigo2,
+    color: Palette.backgroundBrandWeakest,
     fontWeight: 'normal',
   },
 
   menuItemContainer: {
-    backgroundColor: Palette.colors.white,
+    backgroundColor: Palette.backgroundText,
     paddingHorizontal: Dimensions.horizontalSpaceBig,
     paddingVertical: Dimensions.verticalSpaceBig,
     flexDirection: 'row',
@@ -76,7 +76,7 @@ export const styles = StyleSheet.create({
   menuItemText: {
     fontFamily: Typography.fontFamilyReadableText,
     marginLeft: Dimensions.horizontalSpaceBig,
-    color: Palette.brand.textWeak,
+    color: Palette.textWeak,
     fontSize: Typography.fontSizeNormal,
     fontWeight: 'bold',
   },

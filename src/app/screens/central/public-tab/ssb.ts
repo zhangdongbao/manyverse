@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Stream} from 'xstream';
+import xs, {Stream} from 'xstream';
 import {toVoteContent} from '../../../../ssb/to-ssb';
 import {contentToPublishReq, Req} from '../../../drivers/ssb';
 
@@ -25,6 +25,7 @@ export type LikeEvent = {msgKey: string; like: boolean};
 
 export type Actions = {
   likeMsg$: Stream<LikeEvent>;
+  initializationDone$: Stream<any>;
 };
 
 export default function ssb(actions: Actions): Stream<Req> {
@@ -32,5 +33,9 @@ export default function ssb(actions: Actions): Stream<Req> {
     .map(toVoteContent)
     .map(contentToPublishReq);
 
-  return toggleLikeMsg$;
+  const startDht$ = actions.initializationDone$
+    .take(1)
+    .map(() => ({type: 'dhtInvite.start'} as Req));
+
+  return xs.merge(toggleLikeMsg$, startDht$);
 }

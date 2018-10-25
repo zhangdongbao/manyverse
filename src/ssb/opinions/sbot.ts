@@ -53,6 +53,7 @@ const gives = {
       publish: true,
       publishAbout: true,
       acceptInvite: true,
+      startDht: true,
       acceptDhtInvite: true,
       createDhtInvite: true,
       removeDhtInvite: true,
@@ -234,6 +235,9 @@ const create = (api: any) => {
         }),
         acceptInvite: rec.async((invite: string, cb: any) => {
           sbot.invite.accept(invite, cb);
+        }),
+        startDht: rec.async((cb: any) => {
+          sbot.dhtInvite.start(cb);
         }),
         acceptDhtInvite: rec.async((invite: string, cb: any) => {
           sbot.dhtInvite.accept(invite, cb);

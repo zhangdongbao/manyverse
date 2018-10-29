@@ -68,16 +68,7 @@ export default function model(
   const updateIsSyncing$ = ssbSource.isSyncing$.map(
     isSyncing =>
       function updateIsSyncing(prev: State): State {
-        return {
-          selfFeedId: prev.selfFeedId,
-          lanEnabled: prev.lanEnabled,
-          internetEnabled: prev.internetEnabled,
-          isSyncing,
-          isVisible: prev.isVisible,
-          peers: prev.peers,
-          stagedPeers: prev.stagedPeers,
-          inviteMenuTarget: prev.inviteMenuTarget,
-        };
+        return {...prev, isSyncing};
       },
   );
 
@@ -88,16 +79,7 @@ export default function model(
     .map(
       lanEnabled =>
         function updateLanEnabled(prev: State): State {
-          return {
-            selfFeedId: prev.selfFeedId,
-            lanEnabled,
-            internetEnabled: prev.internetEnabled,
-            isSyncing: prev.isSyncing,
-            isVisible: prev.isVisible,
-            peers: prev.peers,
-            stagedPeers: prev.stagedPeers,
-            inviteMenuTarget: prev.inviteMenuTarget,
-          };
+          return {...prev, lanEnabled};
         },
     );
 
@@ -119,48 +101,21 @@ export default function model(
     .map(
       internetEnabled =>
         function updateInternetEnabled(prev: State): State {
-          return {
-            selfFeedId: prev.selfFeedId,
-            lanEnabled: prev.lanEnabled,
-            internetEnabled,
-            isSyncing: prev.isSyncing,
-            isVisible: prev.isVisible,
-            peers: prev.peers,
-            stagedPeers: prev.stagedPeers,
-            inviteMenuTarget: prev.inviteMenuTarget,
-          };
+          return {...prev, internetEnabled};
         },
     );
 
   const setPeersReducer$ = ssbSource.peers$.map(
     peers =>
       function setPeersReducer(prev: State): State {
-        return {
-          selfFeedId: prev.selfFeedId,
-          lanEnabled: prev.lanEnabled,
-          internetEnabled: prev.internetEnabled,
-          isSyncing: prev.isSyncing,
-          isVisible: prev.isVisible,
-          peers,
-          stagedPeers: prev.stagedPeers,
-          inviteMenuTarget: prev.inviteMenuTarget,
-        };
+        return {...prev, peers};
       },
   );
 
   const setStagedPeersReducer$ = ssbSource.stagedPeers$.map(
     stagedPeers =>
       function setPeersReducer(prev: State): State {
-        return {
-          selfFeedId: prev.selfFeedId,
-          lanEnabled: prev.lanEnabled,
-          internetEnabled: prev.internetEnabled,
-          isSyncing: prev.isSyncing,
-          isVisible: prev.isVisible,
-          peers: prev.peers,
-          stagedPeers,
-          inviteMenuTarget: prev.inviteMenuTarget,
-        };
+        return {...prev, stagedPeers};
       },
   );
 
@@ -169,10 +124,7 @@ export default function model(
     .map(
       peer =>
         function openInviteMenuReducer(prev: State): State {
-          return {
-            ...prev,
-            inviteMenuTarget: peer,
-          };
+          return {...prev, inviteMenuTarget: peer};
         },
     );
 
@@ -185,10 +137,7 @@ export default function model(
       actions.removeDhtInvite$,
     )
     .mapTo(function openInviteMenuReducer(prev: State): State {
-      return {
-        ...prev,
-        inviteMenuTarget: null,
-      };
+      return {...prev, inviteMenuTarget: null};
     });
 
   return xs.merge(

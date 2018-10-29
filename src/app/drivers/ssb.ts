@@ -116,6 +116,7 @@ export class SSBSource {
   public peers$: Stream<Array<PeerMetadata>>;
   public acceptInviteResponse$: Stream<true | string>;
   public acceptDhtInviteResponse$: Stream<true | string>;
+  public removeDhtInviteResponse$: Stream<true | string>;
   public hostingDhtInvites$: Stream<Array<HostingDhtInvite>>;
   public stagedPeers$: Stream<Array<StagedPeerMetadata>>;
 
@@ -230,6 +231,7 @@ export class SSBSource {
 
     this.acceptInviteResponse$ = xs.create<true | string>();
     this.acceptDhtInviteResponse$ = xs.create<true | string>();
+    this.removeDhtInviteResponse$ = xs.create<true | string>();
 
     this.stagedPeers$ = api$
       .map(api => {
@@ -348,11 +350,17 @@ export type AcceptDhtInviteReq = {
   invite: string;
 };
 
+export type RemoveDhtInviteReq = {
+  type: 'dhtInvite.remove';
+  invite: string;
+};
+
 export type Req =
   | PublishReq
   | PublishAboutReq
   | AcceptInviteReq
-  | AcceptDhtInviteReq;
+  | AcceptDhtInviteReq
+  | RemoveDhtInviteReq;
 
 function dropCompletion(stream: Stream<any>): Stream<any> {
   return xs.merge(stream, xs.never());
@@ -418,6 +426,15 @@ export function ssbDriver(sink: Stream<Req>): SSBSource {
               source.acceptDhtInviteResponse$._n(err.message || err);
             } else {
               source.acceptDhtInviteResponse$._n(true);
+            }
+          });
+        }
+        if (req.type === 'dhtInvite.remove') {
+          api.sbot.async.removeDhtInvite[0](req.invite, (err: any, v: any) => {
+            if (err) {
+              source.removeDhtInviteResponse$._n(err.message || err);
+            } else {
+              source.removeDhtInviteResponse$._n(true);
             }
           });
         }

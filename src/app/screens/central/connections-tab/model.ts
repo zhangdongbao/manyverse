@@ -33,10 +33,21 @@ export type State = {
   stagedPeers: Array<StagedPeerMetadata>;
   isSyncing: boolean;
   isVisible: boolean;
+  inviteMenuTarget: StagedPeerMetadata | null;
+};
+
+export type Actions = {
+  openStagedPeer$: Stream<StagedPeerMetadata>;
+  closeInviteMenu$: Stream<any>;
+  infoClientDhtInvite$: Stream<any>;
+  infoServerDhtInvite$: Stream<any>;
+  shareDhtInvite$: Stream<any>;
+  removeDhtInvite$: Stream<any>;
 };
 
 export default function model(
   state$: Stream<State>,
+  actions: Actions,
   ssbSource: SSBSource,
   networkSource: NetworkSource,
 ): Stream<Reducer<State>> {
@@ -50,6 +61,7 @@ export default function model(
       isVisible: false,
       peers: [],
       stagedPeers: [],
+      inviteMenuTarget: null,
     };
   });
 
@@ -64,6 +76,7 @@ export default function model(
           isVisible: prev.isVisible,
           peers: prev.peers,
           stagedPeers: prev.stagedPeers,
+          inviteMenuTarget: prev.inviteMenuTarget,
         };
       },
   );
@@ -83,6 +96,7 @@ export default function model(
             isVisible: prev.isVisible,
             peers: prev.peers,
             stagedPeers: prev.stagedPeers,
+            inviteMenuTarget: prev.inviteMenuTarget,
           };
         },
     );
@@ -113,6 +127,7 @@ export default function model(
             isVisible: prev.isVisible,
             peers: prev.peers,
             stagedPeers: prev.stagedPeers,
+            inviteMenuTarget: prev.inviteMenuTarget,
           };
         },
     );
@@ -128,6 +143,7 @@ export default function model(
           isVisible: prev.isVisible,
           peers,
           stagedPeers: prev.stagedPeers,
+          inviteMenuTarget: prev.inviteMenuTarget,
         };
       },
   );
@@ -143,9 +159,37 @@ export default function model(
           isVisible: prev.isVisible,
           peers: prev.peers,
           stagedPeers,
+          inviteMenuTarget: prev.inviteMenuTarget,
         };
       },
   );
+
+  const openInviteMenuReducer$ = actions.openStagedPeer$
+    .filter(peer => peer.source === 'dht')
+    .map(
+      peer =>
+        function openInviteMenuReducer(prev: State): State {
+          return {
+            ...prev,
+            inviteMenuTarget: peer,
+          };
+        },
+    );
+
+  const closeInviteMenuReducer$ = xs
+    .merge(
+      actions.closeInviteMenu$,
+      actions.infoClientDhtInvite$,
+      actions.infoServerDhtInvite$,
+      actions.shareDhtInvite$,
+      actions.removeDhtInvite$,
+    )
+    .mapTo(function openInviteMenuReducer(prev: State): State {
+      return {
+        ...prev,
+        inviteMenuTarget: null,
+      };
+    });
 
   return xs.merge(
     initReducer$,
@@ -154,5 +198,7 @@ export default function model(
     updateInternetEnabled$,
     setPeersReducer$,
     setStagedPeersReducer$,
+    openInviteMenuReducer$,
+    closeInviteMenuReducer$,
   );
 }

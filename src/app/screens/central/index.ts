@@ -18,15 +18,20 @@
  */
 
 import xs, {Stream} from 'xstream';
+import sampleCombine from 'xstream/extra/sampleCombine';
 import {StateSource, Reducer} from '@cycle/state';
 import {ReactElement} from 'react';
 import isolate from '@cycle/isolate';
 import {ReactSource} from '@cycle/react';
 import {Command as AlertCommand} from 'cycle-native-alert';
 import {SharedContent} from 'cycle-native-share';
+import {
+  AsyncStorageSource,
+  Command as StorageCommand,
+} from 'cycle-native-asyncstorage';
+import {Command, NavSource} from 'cycle-native-navigation';
 import {Toast, Duration as ToastDuration} from '../../drivers/toast';
 import {NetworkSource} from '../../drivers/network';
-import {Command, NavSource} from 'cycle-native-navigation';
 import {SSBSource, Req} from '../../drivers/ssb';
 import {DialogSource} from '../../drivers/dialogs';
 import {publicTab, Sinks as PublicTabSinks} from './public-tab/index';
@@ -44,11 +49,11 @@ import model, {
 } from './model';
 import view from './view';
 import navigation from './navigation';
-import sampleCombine from 'xstream/extra/sampleCombine';
 
 export type Sources = {
   screen: ReactSource;
   navigation: NavSource;
+  asyncstorage: AsyncStorageSource;
   network: NetworkSource;
   state: StateSource<State>;
   dialog: DialogSource;
@@ -58,6 +63,7 @@ export type Sources = {
 export type Sinks = {
   screen: Stream<ReactElement<any>>;
   navigation: Stream<Command>;
+  asyncstorage: Stream<StorageCommand>;
   alert: Stream<AlertCommand>;
   state: Stream<Reducer<any>>;
   ssb: Stream<Req>;
@@ -158,6 +164,7 @@ export function central(sources: Sources): Sinks {
     screen: vdom$,
     state: reducer$,
     navigation: command$,
+    asyncstorage: connectionsTabSinks.asyncstorage,
     alert: connectionsTabSinks.alert,
     ssb: ssb$,
     clipboard: publicTabSinks.clipboard,

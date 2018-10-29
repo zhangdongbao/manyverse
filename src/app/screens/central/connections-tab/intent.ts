@@ -20,9 +20,8 @@
 import {Stream} from 'xstream';
 import {ReactSource} from '@cycle/react';
 import {FeedId} from 'ssb-typescript';
-import {StagedPeerMetadata as Staged} from '../../../drivers/ssb';
 import {NavSource} from 'cycle-native-navigation';
-import {State} from './model';
+import {State, StagedPeer} from './model';
 import sample from 'xstream-sample';
 
 export default function intent(
@@ -41,7 +40,7 @@ export default function intent(
 
     openStagedPeer$: reactSource
       .select('staged-list')
-      .events('pressPeer') as Stream<Staged>,
+      .events('pressPeer') as Stream<StagedPeer>,
 
     closeInviteMenu$: back$
       .compose(sample(state$))
@@ -53,6 +52,28 @@ export default function intent(
       .filter(state => !state.inviteMenuTarget)
       .mapTo(null),
 
+    infoClientDhtInvite$: reactSource
+      .select('slide-in-menu')
+      .events('select')
+      .filter(val => val === 'info')
+      .compose(sample(state$))
+      .filter(state => (state.inviteMenuTarget as StagedPeer).role !== 'server')
+      .mapTo(null),
+
+    infoServerDhtInvite$: reactSource
+      .select('slide-in-menu')
+      .events('select')
+      .filter(val => val === 'info')
+      .compose(sample(state$))
+      .filter(state => (state.inviteMenuTarget as StagedPeer).role === 'server')
+      .mapTo(null),
+
+    noteDhtInvite$: reactSource
+      .select('slide-in-menu')
+      .events('select')
+      .filter(val => val === 'note')
+      .mapTo(null),
+
     shareDhtInvite$: reactSource
       .select('slide-in-menu')
       .events('select')
@@ -61,7 +82,7 @@ export default function intent(
       .map(
         state =>
           'dht:' +
-          (state.inviteMenuTarget as Staged).key +
+          (state.inviteMenuTarget as StagedPeer).key +
           ':' +
           state.selfFeedId,
       ),
@@ -71,23 +92,7 @@ export default function intent(
       .events('select')
       .filter(val => val === 'delete')
       .compose(sample(state$))
-      .map(state => (state.inviteMenuTarget as Staged).key),
-
-    infoClientDhtInvite$: reactSource
-      .select('slide-in-menu')
-      .events('select')
-      .filter(val => val === 'info')
-      .compose(sample(state$))
-      .filter(state => (state.inviteMenuTarget as Staged).role !== 'server')
-      .mapTo(null),
-
-    infoServerDhtInvite$: reactSource
-      .select('slide-in-menu')
-      .events('select')
-      .filter(val => val === 'info')
-      .compose(sample(state$))
-      .filter(state => (state.inviteMenuTarget as Staged).role === 'server')
-      .mapTo(null),
+      .map(state => (state.inviteMenuTarget as StagedPeer).key),
 
     goToPeerProfile$: reactSource
       .select('connections-list')

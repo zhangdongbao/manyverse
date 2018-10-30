@@ -68,15 +68,6 @@ function rnChannelTransport(_sbot: any) {
 
 function dhtTransport(_sbot: any) {
 
-  setTimeout( () => {
-    _sbot.bluetooth.nearbyDevices(30000, (err: any, result: any) => {
-      console.log("err? " + err);
-      console.log("devices: ");
-      console.log(result)
-    });
-  }, 20000);
-
-
   _sbot.multiserver.transport({
     name: 'dht',
     create: (dhtConfig: any) =>
@@ -84,7 +75,9 @@ function dhtTransport(_sbot: any) {
   });
 }
 
-const bluetoothManager: any = BluetoothManager();
+const bluetoothManager: any = BluetoothManager({
+  socketFolderPath: "/data/data/se.manyver/files/"
+});
 
 const sbot = require('scuttlebot/index')
   .use(rnChannelTransport)

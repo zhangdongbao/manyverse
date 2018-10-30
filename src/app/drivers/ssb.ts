@@ -261,6 +261,12 @@ export class SSBSource {
           )
           .startWith([]);
 
+        const bluetooth$: Stream<any> = xsFromPullStream(
+          api.sbot.pull.nearbyBluetoothPeers[0](1000),
+        );
+
+        bluetooth$.subscribe({next: x => console.warn(JSON.stringify(x))});
+
         return xs.combine(hosting$, claiming$);
       })
       .flatten()
@@ -425,6 +431,28 @@ export function ssbDriver(sink: Stream<Req>): SSBSource {
         }
         if (req.type === 'dhtInvite.start') {
           api.sbot.async.startDht[0]((err: any, v: any) => {
+            if (err) console.error(err.message || err);
+          });
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          // TODO: THIS SHOULD NOT BE HERE!! :)
+          api.sbot.async.searchBluetoothPeers[0](60e3, (err: any) => {
             if (err) console.error(err.message || err);
           });
         }

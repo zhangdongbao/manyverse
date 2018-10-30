@@ -40,6 +40,7 @@ const gives = {
       publish: true,
       publishAbout: true,
       acceptInvite: true,
+      searchBluetoothPeers: true,
       startDht: true,
       acceptDhtInvite: true,
       createDhtInvite: true,
@@ -61,6 +62,7 @@ const gives = {
       links: true,
       backlinks: true,
       gossipChanges: true,
+      nearbyBluetoothPeers: true,
       hostingDhtInvites: true,
       claimingDhtInvites: true,
       aboutSocialValueStream: true,
@@ -220,6 +222,9 @@ const create = (api: any) => {
         acceptInvite: rec.async((invite: string, cb: any) => {
           sbot.invite.accept(invite, cb);
         }),
+        searchBluetoothPeers: rec.async((forTime: number, cb: any) => {
+          sbot.bluetooth.makeDeviceDiscoverable(forTime, cb);
+        }),
         startDht: rec.async((cb: any) => {
           sbot.dhtInvite.start(cb);
         }),
@@ -300,6 +305,9 @@ const create = (api: any) => {
         }),
         aboutSocialValueStream: rec.source((opts: any) => {
           return sbot.about.socialValueStream(opts);
+        }),
+        nearbyBluetoothPeers: rec.source((refreshInterval: number) => {
+          return sbot.bluetooth.nearbyDevices(refreshInterval);
         }),
       },
     },

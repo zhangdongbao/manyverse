@@ -124,9 +124,9 @@ export = {
     claimingInvites: 'source',
   },
   bluetooth: {
-    "nearbyDevices": "source",
-    "makeDeviceDiscoverable": "async",
-    "isEnabled": "async"
+    nearbyDevices: 'source',
+    makeDeviceDiscoverable: 'async',
+    isEnabled: 'async',
   },
 
   // This project's plugins

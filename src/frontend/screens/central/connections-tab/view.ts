@@ -56,12 +56,12 @@ function ConnectivityMode(props: ModeProps) {
 
 function ConnectivityModes(state: State) {
   return h(View, {style: styles.modesContainer}, [
-    // h(ConnectivityMode, {
-    //   sel: 'bluetooth-mode',
-    //   active: false,
-    //   icon: 'bluetooth',
-    //   label: 'Bluetooth Mode',
-    // }),
+    h(ConnectivityMode, {
+      sel: 'bluetooth-mode',
+      active: false,
+      icon: 'bluetooth',
+      label: 'Bluetooth Mode',
+    }),
 
     h(ConnectivityMode, {
       sel: 'lan-mode',

@@ -17,6 +17,7 @@ import com.bitgo.randombytes.RandomBytesPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.reactnativenavigation.NavigationApplication;
+import com.rusel.RCTBluetoothSerial.BluetoothSerialConfiguration;
 import com.rusel.RCTBluetoothSerial.RCTBluetoothSerialPackage;
 import com.staltz.reactnativeandroidlocalnotification.NotificationPackage;
 import com.staltz.reactnativehasinternet.HasInternetPackage;
@@ -46,10 +47,15 @@ public class MainApplication extends NavigationApplication {
   }
 
   protected List<ReactPackage> getPackages() {
+
+    BluetoothSerialConfiguration bluetoothConfig = new BluetoothSerialConfiguration(
+            "/data/data/se.manyver/files"
+    );
+
     // Add additional packages you require here
     // No need to add RnnPackage and MainReactPackage
     return Arrays.<ReactPackage>asList(new MainReactPackage(),
-            new RCTBluetoothSerialPackage(),
+            new RCTBluetoothSerialPackage(bluetoothConfig),
             new PickerPackage(),
             new HasInternetPackage(),
             new AndroidWifiPackage(), new RNFSPackage(),

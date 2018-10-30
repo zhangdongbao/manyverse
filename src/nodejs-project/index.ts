@@ -31,6 +31,7 @@ import manifest = require('./manifest');
 const BluetoothManager = require('ssb-mobile-bluetooth-manager');
 const Bluetooth = require('ssb-bluetooth');
 
+
 const appDataDir = rnBridge.app.datadir();
 const ssbPath = path.resolve(appDataDir, '.ssb');
 if (!fs.existsSync(ssbPath)) {
@@ -49,12 +50,12 @@ config.connections = {
     net: [{scope: 'private', transform: 'shs', port: 8008}],
     dht: [{scope: 'public', transform: 'shs', port: 8423}],
     channel: [{scope: 'device', transform: 'noauth'}],
-    bluetooth: [{scope: 'public', transform: 'noauth'}],
+    bluetooth: [{scope: 'public', transform: 'noauth'}]
   },
   outgoing: {
     net: [{transform: 'shs'}],
     dht: [{transform: 'shs'}],
-    bluetooth: [{scope: 'public', transform: 'noauth'}],
+    bluetooth: [{scope: 'public', transform: 'noauth'}]
   },
 };
 
@@ -66,6 +67,16 @@ function rnChannelTransport(_sbot: any) {
 }
 
 function dhtTransport(_sbot: any) {
+
+  setTimeout( () => {
+    _sbot.bluetooth.nearbyDevices(30000, (err: any, result: any) => {
+      console.log("err? " + err);
+      console.log("devices: ");
+      console.log(result)
+    });
+  }, 20000);
+
+
   _sbot.multiserver.transport({
     name: 'dht',
     create: (dhtConfig: any) =>
@@ -75,7 +86,7 @@ function dhtTransport(_sbot: any) {
 
 const bluetoothManager: any = BluetoothManager();
 
-require('scuttlebot/index')
+const sbot = require('scuttlebot/index')
   .use(rnChannelTransport)
   .use(require('ssb-dht-invite'))
   .use(dhtTransport)
@@ -98,3 +109,5 @@ require('scuttlebot/index')
   .use(require('scuttlebot/plugins/local'))
   .use(require('ssb-ebt'))
   .call(null, config);
+
+sbot.dhtInvite.start();

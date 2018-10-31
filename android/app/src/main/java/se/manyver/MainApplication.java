@@ -48,8 +48,10 @@ public class MainApplication extends NavigationApplication {
 
   protected List<ReactPackage> getPackages() {
 
+    String socketDir = this.getApplicationInfo().dataDir + "/files";
+
     BluetoothSerialConfiguration bluetoothConfig = new BluetoothSerialConfiguration(
-            "/data/data/se.manyver/files"
+            socketDir
     );
 
     // Add additional packages you require here

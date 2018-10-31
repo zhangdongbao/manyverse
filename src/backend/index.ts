@@ -82,7 +82,7 @@ function dhtTransport(_sbot: any) {
 }
 
 const bluetoothManager: any = BluetoothManager({
-  socketFolderPath: "/data/data/se.manyver/files/"
+  socketFolderPath: appDataDir
 });
 
 require('scuttlebot/index')

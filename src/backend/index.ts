@@ -14,12 +14,11 @@ const rnChannelPlugin = require('multiserver-rn-channel');
 const NoauthTransformPlugin = require('multiserver/plugins/noauth');
 const npip = require('non-private-ip');
 const injectSsbConfig = require('ssb-config/inject');
+const BluetoothManager = require('ssb-mobile-bluetooth-manager');
+const bluetoothTransportAndPlugin = require('ssb-bluetooth');
 import syncingPlugin = require('./plugins/syncing');
 import blobsFromPathPlugin = require('./plugins/blobsFromPath');
 import manifest = require('./manifest');
-
-const BluetoothManager = require('ssb-mobile-bluetooth-manager');
-const Bluetooth = require('ssb-bluetooth');
 
 const appDataDir = rnBridge.app.datadir();
 const ssbPath = path.resolve(appDataDir, '.ssb');
@@ -82,7 +81,7 @@ function dhtTransport(_sbot: any) {
 }
 
 const bluetoothManager: any = BluetoothManager({
-  socketFolderPath: appDataDir
+  socketFolderPath: appDataDir,
 });
 
 require('scuttlebot/index')
@@ -90,7 +89,7 @@ require('scuttlebot/index')
   .use(rnChannelTransport)
   .use(require('ssb-dht-invite'))
   .use(dhtTransport)
-  .use(Bluetooth(bluetoothManager))
+  .use(bluetoothTransportAndPlugin(bluetoothManager))
   .use(require('scuttlebot/plugins/master'))
   .use(require('@staltz/sbot-gossip'))
   .use(require('scuttlebot/plugins/replicate'))

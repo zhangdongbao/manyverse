@@ -24,16 +24,14 @@ const mkdirp = require('mkdirp');
 const DHT = require('multiserver-dht');
 const rnBridge = require('rn-bridge');
 const rnChannelPlugin = require('multiserver-rn-channel');
+const BluetoothManager = require('ssb-mobile-bluetooth-manager');
+const bluetoothTransportAndPlugin = require('ssb-bluetooth');
 import syncingPlugin = require('./plugins/syncing');
 import blobsFromPathPlugin = require('./plugins/blobsFromPath');
 import manifest = require('./manifest');
 
-const BluetoothManager = require('ssb-mobile-bluetooth-manager');
-const Bluetooth = require('ssb-bluetooth');
-
-
-const appDataDir = rnBridge.app.datadir();
-const ssbPath = path.resolve(appDataDir, '.ssb');
+const appFilesDir = rnBridge.app.datadir();
+const ssbPath = path.resolve(appFilesDir, '.ssb');
 if (!fs.existsSync(ssbPath)) {
   mkdirp.sync(ssbPath);
 }
@@ -50,12 +48,12 @@ config.connections = {
     net: [{scope: 'private', transform: 'shs', port: 8008}],
     dht: [{scope: 'public', transform: 'shs', port: 8423}],
     channel: [{scope: 'device', transform: 'noauth'}],
-    bluetooth: [{scope: 'public', transform: 'noauth'}]
+    bluetooth: [{scope: 'public', transform: 'noauth'}],
   },
   outgoing: {
     net: [{transform: 'shs'}],
     dht: [{transform: 'shs'}],
-    bluetooth: [{scope: 'public', transform: 'noauth'}]
+    bluetooth: [{scope: 'public', transform: 'noauth'}],
   },
 };
 
@@ -67,7 +65,6 @@ function rnChannelTransport(_sbot: any) {
 }
 
 function dhtTransport(_sbot: any) {
-
   _sbot.multiserver.transport({
     name: 'dht',
     create: (dhtConfig: any) =>
@@ -76,14 +73,14 @@ function dhtTransport(_sbot: any) {
 }
 
 const bluetoothManager: any = BluetoothManager({
-  socketFolderPath: appDataDir
+  socketFolderPath: appFilesDir,
 });
 
-const sbot = require('scuttlebot/index')
+require('scuttlebot/index')
   .use(rnChannelTransport)
   .use(require('ssb-dht-invite'))
   .use(dhtTransport)
-  .use(Bluetooth(bluetoothManager))
+  .use(bluetoothTransportAndPlugin(bluetoothManager))
   .use(require('scuttlebot/plugins/master'))
   .use(require('@staltz/sbot-gossip'))
   .use(require('scuttlebot/plugins/replicate'))
@@ -102,5 +99,3 @@ const sbot = require('scuttlebot/index')
   .use(require('scuttlebot/plugins/local'))
   .use(require('ssb-ebt'))
   .call(null, config);
-
-sbot.dhtInvite.start();

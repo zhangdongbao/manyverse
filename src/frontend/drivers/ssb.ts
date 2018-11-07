@@ -57,8 +57,9 @@ export type ThreadAndExtras = {
 
 export type StagedPeerMetadata = {
   key: string;
-  source: 'local' | 'dht' | 'pub';
+  source: 'local' | 'dht' | 'pub' | 'bluetooth';
   role?: 'client' | 'server';
+  note?: string;
 };
 
 function mutateMsgWithLiveExtras(api: any) {
@@ -269,16 +270,26 @@ export class SSBSource {
           )
           .startWith([]);
 
-        const bluetooth$: Stream<any> = xsFromPullStream(
+        const bluetooth$: Stream<Array<StagedPeerMetadata>> = xsFromPullStream(
           api.sbot.pull.nearbyBluetoothPeers[0](1000),
+        ).map((result: any) =>
+          result.discovered.map((data: any) => ({
+            key: data.remoteAddress,
+            source: 'bluetooth',
+            note: data.displayName,
+          })),
         );
 
         bluetooth$.subscribe({next: x => console.warn(JSON.stringify(x))});
 
-        return xs.combine(hosting$, claiming$);
+        return xs.combine(bluetooth$, hosting$, claiming$);
       })
       .flatten()
-      .map(([hosting, claiming]) => hosting.concat(claiming));
+      .map(([bluetooth, hosting, claiming]) => [
+        ...bluetooth,
+        ...hosting,
+        ...claiming,
+      ]);
   }
 
   public thread$(rootMsgId: MsgId): Stream<ThreadAndExtras> {

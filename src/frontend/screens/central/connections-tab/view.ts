@@ -88,7 +88,8 @@ function ConnectivityModes(state: State) {
 
 function Body(state: State) {
   const {lanEnabled, internetEnabled, peers, stagedPeers} = state;
-  if (!lanEnabled && !internetEnabled) {
+  const bluetoothEnabled = true;
+  if (!bluetoothEnabled && !lanEnabled && !internetEnabled) {
     return h(EmptySection, {
       style: styles.emptySection,
       image: require('../../../../../images/noun-lantern.png'),

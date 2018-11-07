@@ -8,15 +8,14 @@ import xs, {Stream} from 'xstream';
 import concat from 'xstream/extra/concat';
 import {PeerMetadata, FeedId} from 'ssb-typescript';
 import {Reducer} from '@cycle/state';
-import {SSBSource, StagedPeerMetadata} from '../../../drivers/ssb';
+import {
+  SSBSource,
+  StagedPeerMetadata as StagedPeer,
+} from '../../../drivers/ssb';
 import {NetworkSource} from '../../../drivers/network';
 import {noteStorageKeyFor} from './asyncstorage';
 import dropRepeats from 'xstream/extra/dropRepeats';
 import {AsyncStorageSource} from 'cycle-native-asyncstorage';
-
-export type StagedPeer = StagedPeerMetadata & {
-  note?: string;
-};
 
 export type State = {
   selfFeedId: FeedId;
@@ -126,7 +125,7 @@ export default function model(
     })
     .flatten()
     .map(
-      ([rawStagedPeers, notes]: [StagedPeerMetadata[], [string, string][]]) =>
+      ([rawStagedPeers, notes]: [StagedPeer[], [string, string][]]) =>
         function setPeersReducer(prev: State): State {
           const stagedPeers = rawStagedPeers.map(p => {
             const kv = notes.find(_kv => _kv[0].endsWith(p.key) && !!_kv[1]);

@@ -8,7 +8,8 @@ import {Stream} from 'xstream';
 import {ReactSource} from '@cycle/react';
 import {FeedId} from 'ssb-typescript';
 import {NavSource} from 'cycle-native-navigation';
-import {State, StagedPeer} from './model';
+import {StagedPeerMetadata as StagedPeer} from '../../../drivers/ssb';
+import {State} from './model';
 import sample from 'xstream-sample';
 
 export default function intent(

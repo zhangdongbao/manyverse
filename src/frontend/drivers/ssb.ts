@@ -409,13 +409,19 @@ export type RemoveDhtInviteReq = {
   invite: string;
 };
 
+export type SearchBluetoothReq = {
+  type: 'searchBluetooth';
+  interval: number;
+};
+
 export type Req =
   | PublishReq
   | PublishAboutReq
   | AcceptInviteReq
   | StartDhtReq
   | AcceptDhtInviteReq
-  | RemoveDhtInviteReq;
+  | RemoveDhtInviteReq
+  | SearchBluetoothReq;
 
 function dropCompletion(stream: Stream<any>): Stream<any> {
   return xs.merge(stream, xs.never());
@@ -478,26 +484,9 @@ export function ssbDriver(sink: Stream<Req>): SSBSource {
           api.sbot.async.startDht[0]((err: any, v: any) => {
             if (err) console.error(err.message || err);
           });
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          // TODO: THIS SHOULD NOT BE HERE!! :)
-          api.sbot.async.searchBluetoothPeers[0](60e3, (err: any) => {
+        }
+        if (req.type === 'searchBluetooth') {
+          api.sbot.async.searchBluetoothPeers[0](req.interval, (err: any) => {
             if (err) console.error(err.message || err);
           });
         }

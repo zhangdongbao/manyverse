@@ -88,5 +88,7 @@ export default function intent(
     goToPasteInvite$: fabPress$.filter(action => action === 'invite-paste'),
 
     goToCreateInvite$: fabPress$.filter(action => action === 'invite-create'),
+
+    bluetoothSearch$: fabPress$.filter(action => action === 'bluetooth-search'),
   };
 }

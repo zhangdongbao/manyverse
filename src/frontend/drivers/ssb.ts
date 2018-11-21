@@ -280,8 +280,6 @@ export class SSBSource {
           })),
         );
 
-        bluetooth$.subscribe({next: x => console.warn(JSON.stringify(x))});
-
         return xs.combine(bluetooth$, hosting$, claiming$);
       })
       .flatten()
@@ -425,6 +423,11 @@ export type SearchBluetoothReq = {
   interval: number;
 };
 
+export type ConnectBluetoothReq = {
+  type: 'connectBluetooth';
+  address: string;
+};
+
 export type Req =
   | PublishReq
   | PublishAboutReq
@@ -432,7 +435,8 @@ export type Req =
   | StartDhtReq
   | AcceptDhtInviteReq
   | RemoveDhtInviteReq
-  | SearchBluetoothReq;
+  | SearchBluetoothReq
+  | ConnectBluetoothReq;
 
 function dropCompletion(stream: Stream<any>): Stream<any> {
   return xs.merge(stream, xs.never());
@@ -498,6 +502,11 @@ export function ssbDriver(sink: Stream<Req>): SSBSource {
         }
         if (req.type === 'searchBluetooth') {
           api.sbot.async.searchBluetoothPeers[0](req.interval, (err: any) => {
+            if (err) console.error(err.message || err);
+          });
+        }
+        if (req.type === 'connectBluetooth') {
+          api.sbot.async.gossipConnect[0]('bt:' + req.address, (err: any) => {
             if (err) console.error(err.message || err);
           });
         }

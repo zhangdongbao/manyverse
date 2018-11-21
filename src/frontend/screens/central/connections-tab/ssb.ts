@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import xs, {Stream} from 'xstream';
-import {Req} from '../../../drivers/ssb';
+import {Req, StagedPeerMetadata} from '../../../drivers/ssb';
 
 export type Actions = {
   removeDhtInvite$: Stream<string>;
   bluetoothSearch$: Stream<any>;
+  openStagedPeer$: Stream<StagedPeerMetadata>;
 };
 
 export default function ssb(actions: Actions) {
@@ -20,5 +21,8 @@ export default function ssb(actions: Actions) {
     actions.bluetoothSearch$.mapTo(
       {type: 'searchBluetooth', interval: 60e3} as Req,
     ),
+    actions.openStagedPeer$
+      .filter(peer => peer.source === 'bluetooth')
+      .map(peer => ({type: 'connectBluetooth', address: peer.key} as Req)),
   );
 }

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "loader.js",
   "dependencies": {
-    "@staltz/sbot-gossip": "1.1.6",
+    "@staltz/sbot-gossip": "1.2.0",
     "abstract-leveldown": "5.0.0",
     "bindings-noderify-nodejs-mobile": "10.3.0",
     "bufferutil": "3.0.1",

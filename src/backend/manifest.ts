@@ -128,6 +128,11 @@ export = {
   syncing: {
     stream: 'source',
   },
+  lab: {
+    init: 'async',
+    indexes: 'async',
+    query: 'async',
+  },
   blobsFromPath: {
     add: 'async',
   },

@@ -36,6 +36,9 @@ const gives = {
     },
     async: {
       get: true,
+      labInit: true,
+      labIndexes: true,
+      labQuery: true,
       progress: true,
       publish: true,
       publishAbout: true,
@@ -152,6 +155,15 @@ const create = (api: any) => {
         cache: () => cache,
       },
       async: {
+        labInit: rec.async((cb: any) => {
+          sbot.lab.init(cb);
+        }),
+        labIndexes: rec.async((cb: any) => {
+          sbot.lab.indexes(cb);
+        }),
+        labQuery: rec.async((cb: any) => {
+          sbot.lab.query(cb);
+        }),
         get: rec.async((key: any, cb: any) => {
           if (typeof cb !== 'function') {
             throw new Error('cb must be function');

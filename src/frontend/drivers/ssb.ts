@@ -382,13 +382,26 @@ export type RemoveDhtInviteReq = {
   invite: string;
 };
 
+export type LabInitReq = {
+  type: 'lab.init';
+};
+export type LabIndexesReq = {
+  type: 'lab.indexes';
+};
+export type LabQueryReq = {
+  type: 'lab.query';
+};
+
 export type Req =
   | PublishReq
   | PublishAboutReq
   | AcceptInviteReq
   | StartDhtReq
   | AcceptDhtInviteReq
-  | RemoveDhtInviteReq;
+  | RemoveDhtInviteReq
+  | LabInitReq
+  | LabIndexesReq
+  | LabQueryReq;
 
 function dropCompletion(stream: Stream<any>): Stream<any> {
   return xs.merge(stream, xs.never());
@@ -433,6 +446,15 @@ export function ssbDriver(sink: Stream<Req>): SSBSource {
     .flatten()
     .addListener({
       next: ([api, req]) => {
+        if (req.type === 'lab.init') {
+          api.sbot.async.labInit[0](() => {});
+        }
+        if (req.type === 'lab.indexes') {
+          api.sbot.async.labIndexes[0](() => {});
+        }
+        if (req.type === 'lab.query') {
+          api.sbot.async.labQuery[0](() => {});
+        }
         if (req.type === 'publish') {
           api.sbot.async.publish[0](req.content);
         }

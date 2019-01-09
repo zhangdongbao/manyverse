@@ -147,7 +147,11 @@ export function central(sources: Sources): Sinks {
   });
   const toast$ = xs.merge(inviteToast$, publicTabSinks.toast);
 
-  const ssb$ = xs.merge(publicTabSinks.ssb, connectionsTabSinks.ssb);
+  const ssb$ = xs.merge(
+    publicTabSinks.ssb,
+    connectionsTabSinks.ssb,
+    topBarSinks.ssb,
+  );
 
   return {
     screen: vdom$,

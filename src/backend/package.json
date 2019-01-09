@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "main": "loader.js",
   "dependencies": {
+    "@staltz/binary-tests": "1.0.0",
     "@staltz/sbot-gossip": "1.1.6",
     "abstract-leveldown": "5.0.0",
     "bindings-noderify-nodejs-mobile": "10.3.0",
@@ -39,6 +40,6 @@
     "xtend": "4.0.1"
   },
   "devDependencies": {
-    "noderify": "3.0.2"
+    "noderify": "4.1.0"
   }
 }

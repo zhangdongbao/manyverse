@@ -16,6 +16,7 @@ const npip = require('non-private-ip');
 const injectSsbConfig = require('ssb-config/inject');
 import syncingPlugin = require('./plugins/syncing');
 import blobsFromPathPlugin = require('./plugins/blobsFromPath');
+import labPlugin = require('./plugins/lab');
 import manifest = require('./manifest');
 
 const appDataDir = rnBridge.app.datadir();
@@ -85,6 +86,7 @@ require('scuttlebot/index')
   .use(require('@staltz/sbot-gossip'))
   .use(require('scuttlebot/plugins/replicate'))
   .use(syncingPlugin)
+  .use(labPlugin)
   .use(require('ssb-backlinks'))
   .use(require('ssb-about'))
   .use(require('ssb-friends'))

@@ -307,7 +307,7 @@ const create = (api: any) => {
           return sbot.about.socialValueStream(opts);
         }),
         nearbyBluetoothPeers: rec.source((refreshInterval: number) => {
-          return sbot.bluetooth.nearbyDevices(refreshInterval);
+          return sbot.bluetooth.nearbyScuttlebuttDevices(refreshInterval);
         }),
       },
     },

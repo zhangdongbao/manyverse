@@ -124,7 +124,7 @@ export = {
     claimingInvites: 'source',
   },
   bluetooth: {
-    nearbyDevices: 'source',
+    nearbyScuttlebuttDevices: 'source',
     makeDeviceDiscoverable: 'async',
     isEnabled: 'async',
   },

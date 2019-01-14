@@ -28,7 +28,7 @@
     "@cycle/react": "2.0.0",
     "@cycle/run": "5.1.0",
     "@cycle/state": "1.0.0",
-    "react-native-bluetooth-socket-bridge": "1.0.6",
+    "react-native-bluetooth-socket-bridge": "happy0/react-native-bluetooth-socket-bridge#5a654181dd97bff15ab95d87f9281ce6cdabd0e8",
     "@staltz/rn-viewpager": "1.2.5",
     "@types/react": "16.4.6",
     "@types/react-native": "0.55.26",

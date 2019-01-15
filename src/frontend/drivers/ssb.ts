@@ -274,7 +274,10 @@ export class SSBSource {
           api.sbot.pull.nearbyBluetoothPeers[0](1000),
         ).map((result: any) =>
           result.discovered.map((data: any) => ({
-            key: data.remoteAddress,
+            key:
+              `bt:${data.remoteAddress.split(':').join('')}` +
+              '~' +
+              `shs:${data.id.replace(/^\@/, '')}`,
             source: 'bluetooth',
             note: data.displayName,
           })),
@@ -506,7 +509,7 @@ export function ssbDriver(sink: Stream<Req>): SSBSource {
           });
         }
         if (req.type === 'connectBluetooth') {
-          api.sbot.async.gossipConnect[0]('bt:' + req.address, (err: any) => {
+          api.sbot.async.gossipConnect[0](req.address, (err: any) => {
             if (err) console.error(err.message || err);
           });
         }

@@ -42,12 +42,12 @@ const config = (() => {
       net: [{scope: 'private', transform: 'shs', host, port: NET_PORT}],
       dht: [{scope: 'public', transform: 'shs', port: DHT_PORT}],
       channel: [{scope: 'device', transform: 'noauth'}],
-      bluetooth: [{scope: 'public', transform: 'noauth'}],
+      bluetooth: [{scope: 'public', transform: 'shs'}],
     },
     outgoing: {
       net: [{transform: 'shs'}],
       dht: [{transform: 'shs'}],
-      bluetooth: [{scope: 'public', transform: 'noauth'}],
+      bluetooth: [{scope: 'public', transform: 'shs'}],
     },
   };
   return c;

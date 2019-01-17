@@ -73,7 +73,6 @@ function rnChannelTransport(_sbot: any) {
 }
 
 function dhtTransport(_sbot: any) {
-
   _sbot.multiserver.transport({
     name: 'dht',
     create: (dhtConfig: any) =>
@@ -83,8 +82,8 @@ function dhtTransport(_sbot: any) {
 
 const bluetoothManager: any = BluetoothManager({
   socketFolderPath: appDataDir,
-  myIdent: "@" + keys.public,
-  logStreams: true
+  myIdent: '@' + keys.public,
+  logStreams: true,
 });
 
 require('scuttlebot/index')

@@ -69,7 +69,7 @@ export const styles = StyleSheet.create({
 });
 
 function peerModeIcon(peer: StagedPeer): string {
-  if (peer.source === 'bluetooth') return 'bluetooth';
+  if (peer.source === 'bt') return 'bluetooth';
   if (peer.source === 'local') return 'wifi';
   if (peer.source === 'dht') return 'account-network';
   if (peer.source === 'pub') return 'server-network';
@@ -77,7 +77,7 @@ function peerModeIcon(peer: StagedPeer): string {
 }
 
 function peerModeDescription(peer: StagedPeer): string {
-  if (peer.source === 'bluetooth') return 'Bluetooth';
+  if (peer.source === 'bt') return 'Bluetooth';
   if (peer.source === 'local') return 'Local network';
   if (peer.source === 'dht' && peer.role === 'client')
     return 'Internet P2P: looking for online friend...';

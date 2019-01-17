@@ -57,7 +57,7 @@ export type ThreadAndExtras = {
 
 export type StagedPeerMetadata = {
   key: string;
-  source: 'local' | 'dht' | 'pub' | 'bluetooth';
+  source: 'local' | 'dht' | 'pub' | 'bt';
   role?: 'client' | 'server';
   note?: string;
 };
@@ -273,14 +273,17 @@ export class SSBSource {
         const bluetooth$: Stream<Array<StagedPeerMetadata>> = xsFromPullStream(
           api.sbot.pull.nearbyBluetoothPeers[0](1000),
         ).map((result: any) =>
-          result.discovered.map((data: any) => ({
-            key:
-              `bt:${data.remoteAddress.split(':').join('')}` +
-              '~' +
-              `shs:${data.id.replace(/^\@/, '')}`,
-            source: 'bluetooth',
-            note: data.displayName,
-          })),
+          result.discovered.map(
+            (data: any) =>
+              ({
+                key:
+                  `bt:${data.remoteAddress.split(':').join('')}` +
+                  '~' +
+                  `shs:${data.id.replace(/^\@/, '')}`,
+                source: 'bt',
+                note: data.displayName,
+              } as StagedPeerMetadata),
+          ),
         );
 
         return xs.combine(bluetooth$, hosting$, claiming$);
@@ -511,6 +514,17 @@ export function ssbDriver(sink: Stream<Req>): SSBSource {
         if (req.type === 'connectBluetooth') {
           api.sbot.async.gossipConnect[0](req.address, (err: any) => {
             if (err) console.error(err.message || err);
+            const friendId = '@' + req.address.split('shs:')[1];
+            api.sbot.async.publish[0](
+              {
+                type: 'contact',
+                contact: friendId,
+                following: true,
+              },
+              (err2: any) => {
+                if (err2) console.error(err2.message || err2);
+              },
+            );
           });
         }
         if (req.type === 'dhtInvite.accept') {

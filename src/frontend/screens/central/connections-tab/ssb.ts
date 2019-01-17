@@ -22,7 +22,7 @@ export default function ssb(actions: Actions) {
       {type: 'searchBluetooth', interval: 60e3} as Req,
     ),
     actions.openStagedPeer$
-      .filter(peer => peer.source === 'bluetooth')
+      .filter(peer => peer.source === 'bt')
       .map(peer => ({type: 'connectBluetooth', address: peer.key} as Req)),
   );
 }

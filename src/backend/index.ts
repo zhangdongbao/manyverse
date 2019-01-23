@@ -83,7 +83,7 @@ function dhtTransport(_sbot: any) {
 const bluetoothManager: any = BluetoothManager({
   socketFolderPath: appDataDir,
   myIdent: '@' + keys.public,
-  logStreams: true,
+  logStreams: false,
 });
 
 require('scuttlebot/index')

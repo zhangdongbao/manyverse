@@ -55,6 +55,23 @@ export type ThreadAndExtras = {
   errorReason?: 'blocked' | 'missing' | 'unknown';
 };
 
+export type BTPeer = {remoteAddress: string; id: string; displayName: string};
+
+function btPeerToStagedPeerMetadata(p: BTPeer): StagedPeerMetadata {
+  return {
+    key:
+      `bt:${p.remoteAddress.split(':').join('')}` +
+      '~' +
+      `shs:${p.id.replace(/^\@/, '')}`,
+    source: 'bt',
+    note: p.displayName,
+  };
+}
+
+function btPeerNotYetConnected(btp: BTPeer, connecteds: Array<PeerMetadata>) {
+  return connecteds.findIndex(p => p.key === btp.id) === -1;
+}
+
 export type StagedPeerMetadata = {
   key: string;
   source: 'local' | 'dht' | 'pub' | 'bt';
@@ -270,21 +287,20 @@ export class SSBSource {
           )
           .startWith([]);
 
-        const bluetooth$: Stream<Array<StagedPeerMetadata>> = xsFromPullStream(
+        const bluetoothNearby$: Stream<Array<BTPeer>> = xsFromPullStream(
           api.sbot.pull.nearbyBluetoothPeers[0](1000),
-        ).map((result: any) =>
-          result.discovered.map(
-            (data: any) =>
-              ({
-                key:
-                  `bt:${data.remoteAddress.split(':').join('')}` +
-                  '~' +
-                  `shs:${data.id.replace(/^\@/, '')}`,
-                source: 'bt',
-                note: data.displayName,
-              } as StagedPeerMetadata),
-          ),
+        ).map((result: any) => result.discovered);
+
+        const bluetoothConnected$ = this.peers$.map(peers =>
+          peers.filter(p => (p.source as any) === 'bt'),
         );
+
+        const bluetooth$ = xs
+          .combine(bluetoothNearby$, bluetoothConnected$)
+          .map(([nearbys, connecteds]) =>
+            nearbys.filter(btPeer => btPeerNotYetConnected(btPeer, connecteds)),
+          )
+          .map(btPeers => btPeers.map(btPeerToStagedPeerMetadata));
 
         return xs.combine(bluetooth$, hosting$, claiming$);
       })

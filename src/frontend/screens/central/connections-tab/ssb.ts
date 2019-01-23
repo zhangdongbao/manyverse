@@ -19,7 +19,7 @@ export default function ssb(actions: Actions) {
       invite => ({type: 'dhtInvite.remove', invite} as Req),
     ),
     actions.bluetoothSearch$.mapTo(
-      {type: 'searchBluetooth', interval: 60e3} as Req,
+      {type: 'searchBluetooth', interval: 20e3} as Req,
     ),
     actions.openStagedPeer$
       .filter(peer => peer.source === 'bt')

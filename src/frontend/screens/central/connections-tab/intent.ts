@@ -4,9 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import {Stream} from 'xstream';
+import xs, {Stream} from 'xstream';
 import {ReactSource} from '@cycle/react';
 import {FeedId} from 'ssb-typescript';
+import {PermissionsAndroid} from 'react-native';
 import {NavSource} from 'cycle-native-navigation';
 import {StagedPeerMetadata as StagedPeer} from '../../../drivers/ssb';
 import {State} from './model';
@@ -90,6 +91,21 @@ export default function intent(
 
     goToCreateInvite$: fabPress$.filter(action => action === 'invite-create'),
 
-    bluetoothSearch$: fabPress$.filter(action => action === 'bluetooth-search'),
+    bluetoothSearch$: fabPress$
+      .filter(action => action === 'bluetooth-search')
+      .map(() =>
+        xs.fromPromise(
+          PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+            {
+              title: 'Allow locating via Bluetooth?',
+              message:
+                'Manyverse needs to use Bluetooth to discover where you are ' +
+                '("coarse location") and what peers are around you.',
+            },
+          ),
+        ),
+      )
+      .flatten(),
   };
 }

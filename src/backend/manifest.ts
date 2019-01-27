@@ -125,6 +125,7 @@ export = {
   },
   bluetooth: {
     nearbyScuttlebuttDevices: 'source',
+    bluetoothScanState: 'source',
     makeDeviceDiscoverable: 'async',
     isEnabled: 'async',
   },

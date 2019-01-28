@@ -76,6 +76,7 @@ export const connectionsTabLens: Lens<State, ConnectionsTabState> = {
     } else {
       return {
         selfFeedId: parent.selfFeedId,
+        bluetoothEnabled: false,
         lanEnabled: false,
         internetEnabled: false,
         isSyncing: parent.isSyncing,

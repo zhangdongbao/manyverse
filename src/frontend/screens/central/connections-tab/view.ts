@@ -58,7 +58,7 @@ function ConnectivityModes(state: State) {
   return h(View, {style: styles.modesContainer}, [
     h(ConnectivityMode, {
       sel: 'bluetooth-mode',
-      active: false,
+      active: state.bluetoothEnabled,
       icon: 'bluetooth',
       label: 'Bluetooth Mode',
     }),
@@ -87,8 +87,13 @@ function ConnectivityModes(state: State) {
 }
 
 function Body(state: State) {
-  const {lanEnabled, internetEnabled, peers, stagedPeers} = state;
-  const bluetoothEnabled = true;
+  const {
+    bluetoothEnabled,
+    lanEnabled,
+    internetEnabled,
+    peers,
+    stagedPeers,
+  } = state;
   if (!bluetoothEnabled && !lanEnabled && !internetEnabled) {
     return h(EmptySection, {
       style: styles.emptySection,

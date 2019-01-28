@@ -17,6 +17,7 @@ import com.bitgo.randombytes.RandomBytesPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.reactnativenavigation.NavigationApplication;
+import com.solinor.bluetoothstatus.RNBluetoothManagerPackage;
 import com.scuttlebutt.bluetoothbridge.BluetoothSocketBridgeConfiguration;
 import com.scuttlebutt.bluetoothbridge.BluetoothSocketBridgePackage;
 import com.staltz.reactnativeandroidlocalnotification.NotificationPackage;
@@ -65,6 +66,7 @@ public class MainApplication extends NavigationApplication {
     // Add additional packages you require here
     // No need to add RnnPackage and MainReactPackage
     return Arrays.<ReactPackage>asList(new MainReactPackage(),
+            new RNBluetoothManagerPackage(),
             new BluetoothSocketBridgePackage(bluetoothConfig),
             new PickerPackage(),
             new HasInternetPackage(),

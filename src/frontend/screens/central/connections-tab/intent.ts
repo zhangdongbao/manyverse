@@ -12,6 +12,8 @@ import {NavSource} from 'cycle-native-navigation';
 import {StagedPeerMetadata as StagedPeer} from '../../../drivers/ssb';
 import {State} from './model';
 import sample from 'xstream-sample';
+import dropRepeats from 'xstream/extra/dropRepeats';
+import concat from 'xstream/extra/concat';
 
 export default function intent(
   reactSource: ReactSource,
@@ -21,6 +23,20 @@ export default function intent(
 ) {
   const back$ = navSource.backPress();
   return {
+    pingConnectivityModes$: state$
+      .map(state => state.isVisible)
+      .compose(dropRepeats())
+      .map(
+        isTabVisible =>
+          isTabVisible
+            ? concat(xs.of(0), xs.periodic(2000).take(2), xs.periodic(6000))
+            : xs.never(),
+      )
+      .flatten()
+      .startWith(null),
+
+    showBluetoothHelp$: reactSource.select('bluetooth-mode').events('press'),
+
     showLANHelp$: reactSource.select('lan-mode').events('press'),
 
     showDHTHelp$: reactSource.select('dht-mode').events('press'),

@@ -71,7 +71,7 @@ export function connectionsTab(sources: Sources): Sinks {
     sources.network,
   );
   const fabProps$ = floatingAction(sources.state.stream);
-  const ssb$ = ssb(actionsPlus);
+  const ssb$ = ssb(actionsPlus, sources.network);
   const alert$ = alert(actionsPlus, sources.state.stream);
   const share$ = actionsPlus.shareDhtInvite$.map(inviteCode => ({
     message:

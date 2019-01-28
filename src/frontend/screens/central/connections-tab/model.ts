@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import xs, {Stream} from 'xstream';
-import concat from 'xstream/extra/concat';
 import {PeerMetadata, FeedId} from 'ssb-typescript';
 import {Reducer} from '@cycle/state';
 import {
@@ -14,11 +13,11 @@ import {
 } from '../../../drivers/ssb';
 import {NetworkSource} from '../../../drivers/network';
 import {noteStorageKeyFor} from './asyncstorage';
-import dropRepeats from 'xstream/extra/dropRepeats';
 import {AsyncStorageSource} from 'cycle-native-asyncstorage';
 
 export type State = {
   selfFeedId: FeedId;
+  bluetoothEnabled: boolean;
   lanEnabled: boolean;
   internetEnabled: boolean;
   peers: Array<PeerMetadata>;
@@ -30,6 +29,7 @@ export type State = {
 };
 
 export type Actions = {
+  pingConnectivityModes$: Stream<any>;
   openStagedPeer$: Stream<StagedPeer>;
   closeInviteMenu$: Stream<any>;
   infoClientDhtInvite$: Stream<any>;
@@ -51,6 +51,7 @@ export default function model(
     if (prev) return prev;
     return {
       selfFeedId: '',
+      bluetoothEnabled: false,
       lanEnabled: false,
       internetEnabled: false,
       isSyncing: false,
@@ -69,8 +70,17 @@ export default function model(
       },
   );
 
-  const updateLanEnabled$ = xs
-    .periodic(4000)
+  const updateBluetoothEnabled$ = actions.pingConnectivityModes$
+    .map(() => networkSource.bluetoothIsEnabled())
+    .flatten()
+    .map(
+      bluetoothEnabled =>
+        function updateBluetoothEnabled(prev: State): State {
+          return {...prev, bluetoothEnabled};
+        },
+    );
+
+  const updateLanEnabled$ = actions.pingConnectivityModes$
     .map(() => networkSource.wifiIsEnabled())
     .flatten()
     .map(
@@ -80,19 +90,7 @@ export default function model(
         },
     );
 
-  const shouldUpdateInternetEnabled$ = state$
-    .map(state => state.isVisible)
-    .compose(dropRepeats())
-    .map(
-      isTabVisible =>
-        isTabVisible
-          ? concat(xs.of(0), xs.periodic(1000).take(2), xs.periodic(4000))
-          : xs.never(),
-    )
-    .flatten()
-    .startWith(null);
-
-  const updateInternetEnabled$ = shouldUpdateInternetEnabled$
+  const updateInternetEnabled$ = actions.pingConnectivityModes$
     .map(() => networkSource.hasInternetConnection())
     .flatten()
     .map(
@@ -179,6 +177,7 @@ export default function model(
   return xs.merge(
     initReducer$,
     updateIsSyncing$,
+    updateBluetoothEnabled$,
     updateLanEnabled$,
     updateInternetEnabled$,
     setPeersReducer$,

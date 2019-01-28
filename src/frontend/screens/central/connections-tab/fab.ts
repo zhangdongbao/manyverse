@@ -14,8 +14,7 @@ import {Palette} from '../../../global-styles/palette';
 
 export default function floatingAction(state$: Stream<State>): Stream<Props> {
   return state$.map(state => {
-    const bluetoothEnabled = true;
-    const visible = bluetoothEnabled || state.internetEnabled;
+    const visible = state.bluetoothEnabled || state.internetEnabled;
 
     const actions: Array<IActionProps> = [];
     if (state.internetEnabled) {
@@ -35,7 +34,7 @@ export default function floatingAction(state$: Stream<State>): Stream<Props> {
       );
     }
 
-    if (bluetoothEnabled) {
+    if (state.bluetoothEnabled) {
       actions.push({
         color: Palette.backgroundCTA,
         name: 'bluetooth-search',

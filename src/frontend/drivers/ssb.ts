@@ -287,9 +287,25 @@ export class SSBSource {
           )
           .startWith([]);
 
-        const bluetoothNearby$: Stream<Array<BTPeer>> = xsFromPullStream(
-          api.sbot.pull.nearbyBluetoothPeers[0](1000),
-        ).map((result: any) => result.discovered);
+        const bluetoothEnabled$: Stream<
+          boolean
+        > = api.sbot.obs.bluetoothEnabled[0]();
+
+        const bluetoothNearby$: Stream<Array<BTPeer>> = bluetoothEnabled$
+          .map(
+            bluetoothEnabled =>
+              bluetoothEnabled
+                ? xsFromPullStream(
+                    api.sbot.pull.nearbyBluetoothPeers[0](1000),
+                  ).replaceError(err =>
+                    xsFromPullStream(
+                      api.sbot.pull.nearbyBluetoothPeers[0](1000),
+                    ),
+                  )
+                : xs.never(),
+          )
+          .flatten()
+          .map((result: any) => result.discovered);
 
         const bluetoothConnected$ = this.peers$.map(peers =>
           peers.filter(p => (p.source as any) === 'bt'),
@@ -440,13 +456,23 @@ export type RemoveDhtInviteReq = {
   invite: string;
 };
 
+export type EnableBluetoothReq = {
+  type: 'bluetooth.enable';
+  interval: number;
+};
+
+export type DisableBluetoothReq = {
+  type: 'bluetooth.disable';
+  interval: number;
+};
+
 export type SearchBluetoothReq = {
-  type: 'searchBluetooth';
+  type: 'bluetooth.search';
   interval: number;
 };
 
 export type ConnectBluetoothReq = {
-  type: 'connectBluetooth';
+  type: 'bluetooth.connect';
   address: string;
 };
 
@@ -457,6 +483,8 @@ export type Req =
   | StartDhtReq
   | AcceptDhtInviteReq
   | RemoveDhtInviteReq
+  | EnableBluetoothReq
+  | DisableBluetoothReq
   | SearchBluetoothReq
   | ConnectBluetoothReq;
 
@@ -522,12 +550,18 @@ export function ssbDriver(sink: Stream<Req>): SSBSource {
             if (err) console.error(err.message || err);
           });
         }
-        if (req.type === 'searchBluetooth') {
+        if (req.type === 'bluetooth.enable') {
+          api.sbot.sync.enableBluetooth[0]();
+        }
+        if (req.type === 'bluetooth.disable') {
+          api.sbot.sync.disableBluetooth[0]();
+        }
+        if (req.type === 'bluetooth.search') {
           api.sbot.async.searchBluetoothPeers[0](req.interval, (err: any) => {
             if (err) console.error(err.message || err);
           });
         }
-        if (req.type === 'connectBluetooth') {
+        if (req.type === 'bluetooth.connect') {
           api.sbot.async.gossipConnect[0](req.address, (err: any) => {
             if (err) console.error(err.message || err);
             const friendId = '@' + req.address.split('shs:')[1];

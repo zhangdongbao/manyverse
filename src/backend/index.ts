@@ -90,12 +90,16 @@ const bluetoothManager: any = BluetoothManager({
   logStreams: false,
 });
 
+const bluetoothPluginConfig = {
+  scope: 'public'
+};
+
 require('scuttlebot/index')
   .use(noAuthTransform)
   .use(rnChannelTransport)
   .use(require('ssb-dht-invite'))
   .use(dhtTransport)
-  .use(bluetoothTransportAndPlugin(bluetoothManager))
+  .use(bluetoothTransportAndPlugin(bluetoothManager, bluetoothPluginConfig))
   .use(require('scuttlebot/plugins/master'))
   .use(require('@staltz/sbot-gossip'))
   .use(require('scuttlebot/plugins/replicate'))

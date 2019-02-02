@@ -291,30 +291,21 @@ export class SSBSource {
           boolean
         > = api.sbot.obs.bluetoothEnabled[0]();
 
-        const bluetoothNearby$: Stream<Array<BTPeer>> = bluetoothEnabled$
-          .map(
-            bluetoothEnabled =>
-              bluetoothEnabled
-                ? xsFromPullStream(
-                    api.sbot.pull.nearbyBluetoothPeers[0](1000),
-                  ).replaceError(err =>
-                    xsFromPullStream(
-                      api.sbot.pull.nearbyBluetoothPeers[0](1000),
-                    ),
-                  )
-                : xs.never(),
-          )
-          .flatten()
-          .map((result: any) => result.discovered);
+        const bluetoothNearby$: Stream<Array<BTPeer>> = xsFromPullStream(
+              api.sbot.pull.nearbyBluetoothPeers[0](1000),
+            ).map((result: any) => result.discovered);
 
         const bluetoothConnected$ = this.peers$.map(peers =>
           peers.filter(p => (p.source as any) === 'bt'),
         );
 
         const bluetooth$ = xs
-          .combine(bluetoothNearby$, bluetoothConnected$)
-          .map(([nearbys, connecteds]) =>
-            nearbys.filter(btPeer => btPeerNotYetConnected(btPeer, connecteds)),
+          .combine(bluetoothEnabled$, bluetoothNearby$, bluetoothConnected$)
+          .map(([enabled, nearbys, connecteds]) =>
+            // If bluetooth is disabled, bluetoothNearby$ does not emit anything until it is enabled again,
+            // so we use the 'enabled' boolean to stop peers being displayed which were on the list just
+            // before bluetooth was disabled.
+            nearbys.filter(btPeer => enabled && btPeerNotYetConnected(btPeer, connecteds)),
           )
           .map(btPeers => btPeers.map(btPeerToStagedPeerMetadata));
 

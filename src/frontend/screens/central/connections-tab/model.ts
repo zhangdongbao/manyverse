@@ -24,6 +24,7 @@ export type State = {
   stagedPeers: Array<StagedPeer>;
   isSyncing: boolean;
   isVisible: boolean;
+  bluetoothLastScanned: number;
   inviteMenuTarget: StagedPeer | null;
   latestInviteMenuTarget: StagedPeer | null;
 };
@@ -41,7 +42,6 @@ export type Actions = {
 };
 
 export default function model(
-  state$: Stream<State>,
   actions: Actions,
   asyncStorageSource: AsyncStorageSource,
   ssbSource: SSBSource,
@@ -56,6 +56,7 @@ export default function model(
       internetEnabled: false,
       isSyncing: false,
       isVisible: false,
+      bluetoothLastScanned: 0,
       peers: [],
       stagedPeers: [],
       inviteMenuTarget: null,
@@ -104,6 +105,13 @@ export default function model(
     peers =>
       function setPeersReducer(prev: State): State {
         return {...prev, peers};
+      },
+  );
+
+  const updateBluetoothLastScanned$ = ssbSource.bluetoothScanState$.map(
+    (_scanState: string) =>
+      function setBluetoothScanState(prev: State): State {
+        return {...prev, bluetoothLastScanned: Date.now()};
       },
   );
 
@@ -181,6 +189,7 @@ export default function model(
     updateLanEnabled$,
     updateInternetEnabled$,
     setPeersReducer$,
+    updateBluetoothLastScanned$,
     setStagedPeersReducer$,
     openInviteMenuReducer$,
     closeInviteMenuReducer$,

@@ -64,7 +64,6 @@ export function connectionsTab(sources: Sources): Sinks {
   const command$ = navigation(actionsPlus, sources.state.stream);
   const storageCommand$ = asyncStorage(sources.state.stream);
   const reducer$ = model(
-    sources.state.stream,
     actionsPlus,
     sources.asyncstorage,
     sources.ssb,

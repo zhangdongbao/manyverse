@@ -65,6 +65,7 @@ const gives = {
       backlinks: true,
       gossipChanges: true,
       nearbyBluetoothPeers: true,
+      bluetoothScanState: true,
       hostingDhtInvites: true,
       claimingDhtInvites: true,
       aboutSocialValueStream: true,
@@ -321,6 +322,9 @@ const create = (api: any) => {
         }),
         nearbyBluetoothPeers: rec.source((refreshInterval: number) => {
           return sbot.bluetooth.nearbyScuttlebuttDevices(refreshInterval);
+        }),
+        bluetoothScanState: rec.source(() => {
+          return sbot.bluetooth.bluetoothScanState();
         }),
       },
       obs: {

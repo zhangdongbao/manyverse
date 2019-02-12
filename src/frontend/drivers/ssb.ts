@@ -132,6 +132,7 @@ export class SSBSource {
   public acceptDhtInviteResponse$: Stream<true | string>;
   public hostingDhtInvites$: Stream<Array<HostingDhtInvite>>;
   public stagedPeers$: Stream<Array<StagedPeerMetadata>>;
+  public bluetoothScanState$: Stream<any>;
 
   constructor(private api$: Stream<any>) {
     this.selfFeedId$ = api$.map(api => api.keys.sync.id[0]()).remember();
@@ -317,6 +318,10 @@ export class SSBSource {
         ...hosting,
         ...claiming,
       ]);
+
+    this.bluetoothScanState$ = api$
+      .map(api => xsFromPullStream<any>(api.sbot.pull.bluetoothScanState[0]()))
+      .flatten();
   }
 
   public thread$(rootMsgId: MsgId): Stream<ThreadAndExtras> {

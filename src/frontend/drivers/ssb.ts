@@ -522,7 +522,7 @@ export function ssbDriver(sink: Stream<Req>): SSBSource {
     .map(api => sink.map(req => [api, req] as [any, Req]))
     .flatten()
     .addListener({
-      next: ([api, req]) => {
+      next: async ([api, req]) => {
         if (req.type === 'publish') {
           api.sbot.async.publish[0](req.content);
         }
@@ -558,20 +558,23 @@ export function ssbDriver(sink: Stream<Req>): SSBSource {
           });
         }
         if (req.type === 'bluetooth.connect') {
-          api.sbot.async.gossipConnect[0](req.address, (err: any) => {
-            if (err) console.error(err.message || err);
-            const friendId = '@' + req.address.split('shs:')[1];
-            api.sbot.async.publish[0](
-              {
-                type: 'contact',
-                contact: friendId,
-                following: true,
-              },
-              (err2: any) => {
-                if (err2) console.error(err2.message || err2);
-              },
-            );
-          });
+          // connect
+          const addr = req.address;
+          const [err] = await runAsync(api.sbot.async.gossipConnect[0])(addr);
+          if (err) return console.error(err.message || err);
+
+          // check if following
+          const selfId = api.keys.sync.id[0]();
+          const friendId = '@' + addr.split('shs:')[1];
+          const opts = {source: selfId, dest: friendId};
+          const [err2, f] = await runAsync(api.sbot.async.isFollowing[0])(opts);
+          if (err2) return console.error(err2.message || err2);
+          if (f) return;
+
+          // follow
+          const msg = {type: 'contact', contact: friendId, following: true};
+          const [err3] = await runAsync(api.sbot.async.publish[0])(msg);
+          if (err3) return console.error(err3.message || err3);
         }
         if (req.type === 'dhtInvite.accept') {
           api.sbot.async.acceptDhtInvite[0](req.invite, (err: any, v: any) => {

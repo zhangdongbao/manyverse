@@ -7,7 +7,7 @@ stages:
 build_release:
   script:
     - apt-get --quiet update --yes
-    - apt install curl
+    - apt-get --quiet install --yes curl
     - curl -sL https://deb.nodesource.com/setup_10.x | bash -
     - export GRADLE_USER_HOME=$(pwd)/android/.gradle
     - export ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle

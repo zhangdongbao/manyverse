@@ -4,14 +4,15 @@ stages:
   - build
   - test
 
-before_script:
-  - apt-get --quiet update --yes
-  - export GRADLE_USER_HOME=$(pwd)/android/.gradle
-  - export ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle
-  - chmod +x ./android/gradlew
-
 build_release:
   script:
+    - apt-get --quiet update --yes
+    - apt install curl
+    - curl -sL https://deb.nodesource.com/setup_10.x | bash -
+    - apt install nodejs
+    - export GRADLE_USER_HOME=$(pwd)/android/.gradle
+    - export ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle
+    - chmod +x ./android/gradlew
     - apt-get --quiet install --yes npm default-jdk default-jre git
     - $ANDROID_HOME/tools/bin/sdkmanager "lldb;3.1" > /dev/null
     - $ANDROID_HOME/tools/bin/sdkmanager "cmake;3.6.4111459" > /dev/null

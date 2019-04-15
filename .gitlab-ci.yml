@@ -1,6 +1,4 @@
 image: thyrlian/android-sdk
-# image: jangrewe/gitlab-ci-android
-# image: ubuntu:18.04
 
 stages:
   - build
@@ -15,7 +13,6 @@ before_script:
 build_release:
   script:
     - apt-get --quiet install --yes npm default-jdk default-jre git
-    # - . ./tools/ci-setup-android-sdk.sh
     - $ANDROID_HOME/tools/bin/sdkmanager "lldb;3.1" > /dev/null
     - $ANDROID_HOME/tools/bin/sdkmanager "cmake;3.6.4111459" > /dev/null
     - $ANDROID_HOME/tools/bin/sdkmanager "ndk-bundle" > /dev/null
@@ -27,7 +24,7 @@ build_release:
   stage: build
   artifacts:
     paths:
-      - android/build/outputs/
+      - android/app/build/outputs/apk/release
 
 e2e_tests:
   script:

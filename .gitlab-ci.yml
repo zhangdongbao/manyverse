@@ -1,26 +1,19 @@
 image: thyrlian/android-sdk
 
 stages:
-  - setup
-  - install
   - build
   - test
 
-setup_essentials:
-  stage: setup
+build_release:
+  stage: build
   script:
+    # Install essentials
     - apt-get --quiet update --yes
     - apt-get --quiet install --yes curl gcc g++ make git
-
-install_nodejs:
-  stage: install
-  script:
+    # Install nodejs
     - curl -sL https://deb.nodesource.com/setup_10.x | bash -
     - apt-get --quiet install --yes nodejs
-
-install_watchman:
-  stage: install
-  script:
+    # Install watchman
     - apt-get --quiet install --yes autoconf automake build-essential
     - apt-get --quiet install --yes python-dev libtool pkg-config libssl-dev
     - git clone https://github.com/facebook/watchman.git
@@ -32,10 +25,7 @@ install_watchman:
     - make install
     - cd ..
     - watchman --version
-
-install_android_extras:
-  stage: install
-  script:
+    # Install Android extras
     - apt-get --quiet install --yes default-jdk default-jre
     - $ANDROID_HOME/tools/bin/sdkmanager "lldb;3.1" > /dev/null
     - $ANDROID_HOME/tools/bin/sdkmanager "cmake;3.6.4111459" > /dev/null
@@ -43,16 +33,10 @@ install_android_extras:
     - export GRADLE_USER_HOME=$(pwd)/android/.gradle
     - export ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle
     - chmod +x ./android/gradlew
-
-install_project_deps:
-  stage: install
-  script:
+    # Install project dependencies
     - npm install -g react-native-cli
     - npm install
-
-build_release:
-  stage: build
-  script:
+    # Build the project
     - npm run build-android-release
   artifacts:
     paths:

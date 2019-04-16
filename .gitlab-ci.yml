@@ -25,6 +25,10 @@ build_release:
     - make install
     - cd ..
     - watchman --version
+    - echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_watches
+    - echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_queued_events
+    - echo 999999 | sudo tee -a /proc/sys/fs/inotify/max_user_instances
+    - watchman shutdown-server
     # Install Android extras
     - apt-get --quiet install --yes default-jdk default-jre
     - $ANDROID_HOME/tools/bin/sdkmanager "lldb;3.1" > /dev/null

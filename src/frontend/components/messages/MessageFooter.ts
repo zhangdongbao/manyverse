@@ -30,6 +30,7 @@ export const styles = StyleSheet.create({
   },
 
   likeCount: {
+    flexDirection: 'row',
     fontWeight: 'bold',
   },
 
@@ -122,6 +123,12 @@ export default class MessageFooter extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = this.stateFromProps(props, {ilike: 'no', likeCount: 0});
+    this._likeCountButtonProps = {
+      background: TouchableNativeFeedback.SelectableBackground(),
+      onPress: this.onPressLikeCountHandler.bind(this),
+      accessible: true,
+      accessibilityLabel: 'Like count Button',
+    };
     this._likeButtonProps = {
       background: TouchableNativeFeedback.SelectableBackground(),
       onPress: this.onPressLikeHandler.bind(this),
@@ -136,6 +143,7 @@ export default class MessageFooter extends Component<Props, State> {
     };
   }
 
+  private _likeCountButtonProps: TouchableNativeFeedbackProperties;
   private _likeButtonProps: TouchableNativeFeedbackProperties;
   private _replyButtonProps: TouchableNativeFeedbackProperties;
 
@@ -155,6 +163,10 @@ export default class MessageFooter extends Component<Props, State> {
     } else {
       return prevState;
     }
+  }
+
+  private onPressLikeCountHandler() {
+    console.warn('tapped the like count')
   }
 
   private onPressLikeHandler() {
@@ -198,19 +210,21 @@ export default class MessageFooter extends Component<Props, State> {
   public render() {
     const {likeCount, ilike} = this.state;
 
-    const counter = h(View, {style: styles.row}, [
-      h(
-        Text,
-        {
-          style: likeCount ? styles.likes : styles.likesHidden,
-          accessible: true,
-          accessibilityLabel: 'Like Count',
-        },
-        [
-          h(Text, {style: styles.likeCount}, String(likeCount)),
-          (likeCount === 1 ? ' like' : ' likes') as any,
-        ],
-      ),
+    const counter = h(TouchableNativeFeedback, this._likeCountButtonProps, [
+      h(View, {style: styles.col}, [
+        h(
+          Text,
+          {
+            style: likeCount ? styles.likes : styles.likesHidden,
+            accessible: true,
+            accessibilityLabel: 'Like Count',
+          },
+          [
+            h(Text, {style: styles.likeCount}, String(likeCount)),
+            (likeCount === 1 ? ' like' : ' likes') as any,
+          ],
+        ),
+      ])
     ]);
 
     const buttons = [
@@ -234,7 +248,7 @@ export default class MessageFooter extends Component<Props, State> {
     }
 
     return h(View, {style: styles.col}, [
-      counter,
+      h(View, {style: styles.row}, [counter]),
       h(View, {style: styles.row}, buttons),
     ]);
   }

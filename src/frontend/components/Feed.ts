@@ -127,6 +127,7 @@ type Props = {
   style?: any;
   onInitialPullDone?: () => void;
   onRefresh?: () => void;
+  onPressLikeCount?: (ev: {msgKey: MsgId}) => void;
   onPressLike?: (ev: {msgKey: MsgId; like: boolean}) => void;
   onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void;
   onPressAuthor?: (ev: {authorFeedId: FeedId}) => void;
@@ -207,6 +208,7 @@ export default class Feed extends PureComponent<Props, State> {
   public render() {
     const {
       onRefresh,
+      onPressLikeCount,
       onPressLike,
       onPressReply,
       onPressAuthor,
@@ -248,6 +250,7 @@ export default class Feed extends PureComponent<Props, State> {
           h(CompactThread, {
             thread: item as ThreadAndExtras,
             selfFeedId,
+            onPressLikeCount,
             onPressLike,
             onPressReply,
             onPressAuthor,

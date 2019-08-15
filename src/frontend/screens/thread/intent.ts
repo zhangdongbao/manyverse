@@ -7,7 +7,7 @@
 import {Stream} from 'xstream';
 import sample from 'xstream-sample';
 import {isReplyPostMsg} from 'ssb-typescript/utils';
-import {FeedId, Msg} from 'ssb-typescript';
+import {FeedId, Msg, MsgId} from 'ssb-typescript';
 import {State} from './model';
 import {SSBSource} from '../../drivers/ssb';
 import {ReactSource} from '@cycle/react';
@@ -31,6 +31,10 @@ export default function intent(
     keyboardAppeared$: keyboardSource.events('keyboardDidShow').mapTo(null),
 
     keyboardDisappeared$: keyboardSource.events('keyboardDidHide').mapTo(null),
+
+    goToAccounts$: reactSource.select('thread').events('pressLikeCount') as Stream<{
+      msgKey: MsgId;
+    }>,
 
     likeMsg$: reactSource.select('thread').events('pressLike') as Stream<{
       msgKey: string;

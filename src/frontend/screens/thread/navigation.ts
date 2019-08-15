@@ -6,14 +6,16 @@
 
 import xs, {Stream} from 'xstream';
 import sampleCombine from 'xstream/extra/sampleCombine';
-import {FeedId, Msg} from 'ssb-typescript';
+import {FeedId, Msg, MsgId} from 'ssb-typescript';
 import {Command, NavSource, PopCommand} from 'cycle-native-navigation';
 import {State} from './model';
 import {Screens} from '../..';
+import {navOptions as accountsScreenNavOptions} from '../accounts';
 import {navOptions as profileScreenNavOptions} from '../profile';
 import {navOptions as rawMsgScreenNavOptions} from '../raw-msg';
 
 export type Actions = {
+  goToAccounts$: Stream<{msgKey: MsgId}>;
   goToProfile$: Stream<{authorFeedId: FeedId}>;
   goToRawMsg$: Stream<Msg>;
 };
@@ -23,9 +25,24 @@ export default function navigation(
   navSource: NavSource,
   state$: Stream<State>,
 ): Stream<Command> {
+  const toAccounts$ = actions.goToAccounts$.map(props => {
+    console.warn('clicked count')
+    return ({
+      type: 'push',
+      layout: {
+        component: {
+          name: Screens.Accounts,
+          passProps: props,
+          options: accountsScreenNavOptions,
+        },
+      },
+    } as Command)},
+  );
+
   const toProfile$ = actions.goToProfile$.compose(sampleCombine(state$)).map(
-    ([ev, state]) =>
-      ({
+    ([ev, state]) => {
+      console.warn('clicked profile name')
+      return ({
         type: 'push',
         layout: {
           component: {
@@ -37,7 +54,7 @@ export default function navigation(
             options: profileScreenNavOptions,
           },
         },
-      } as Command),
+      } as Command)},
   );
 
   const toRawMsg$ = actions.goToRawMsg$.map(
@@ -58,5 +75,5 @@ export default function navigation(
     type: 'pop',
   } as PopCommand);
 
-  return xs.merge(toProfile$, toRawMsg$, pop$);
+  return xs.merge(toAccounts$, toProfile$, toRawMsg$, pop$);
 }

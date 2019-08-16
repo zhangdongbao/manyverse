@@ -21,10 +21,12 @@ export type State = {
   hasError: boolean;
 };
 
+type Likes = Array<FeedId> | null;
+
 export type Props = {
   msg: MsgAndExtras;
   selfFeedId: FeedId;
-  onPressLikeCount?: (ev: {msgKey: MsgId}) => void;
+  onPressLikeCount?: (ev: {msgKey: MsgId, likes: Likes}) => void;
   onPressLike?: (ev: {msgKey: MsgId; like: boolean}) => void;
   onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void;
   onPressAuthor?: (ev: {authorFeedId: FeedId}) => void;

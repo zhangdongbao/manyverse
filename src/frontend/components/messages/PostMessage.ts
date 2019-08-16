@@ -15,13 +15,15 @@ import {PostContent as Post, FeedId, Msg, MsgId} from 'ssb-typescript';
 
 type CWPost = Post & {contentWarning?: string};
 
+type Likes = Array<FeedId> | null;
+
 export type Props = {
   msg: Msg<Post>;
   name: string | null;
   imageUrl: string | null;
   likes: Array<FeedId> | null;
   selfFeedId: FeedId;
-  onPressLikeCount?: (ev: {msgKey: MsgId}) => void;
+  onPressLikeCount?: (ev: {msgKey: MsgId; likes: Likes}) => void;
   onPressLike?: (ev: {msgKey: MsgId; like: boolean}) => void;
   onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void;
   onPressAuthor?: (ev: {authorFeedId: FeedId}) => void;

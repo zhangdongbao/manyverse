@@ -106,11 +106,13 @@ const iconProps = {
   },
 };
 
+type Likes = Array<FeedId> | null;
+
 export type Props = {
   msg: Msg;
   selfFeedId: FeedId;
-  likes: Array<FeedId> | null;
-  onPressLikeCount?: (ev: {msgKey: MsgId}) => void;
+  likes: Likes;
+  onPressLikeCount?: (ev: {msgKey: MsgId, likes: Likes}) => void;
   onPressLike?: (ev: {msgKey: MsgId; like: boolean}) => void;
   onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void;
 };
@@ -169,10 +171,11 @@ export default class MessageFooter extends Component<Props, State> {
   private onPressLikeCountHandler() {
     console.warn('tapped the like count')
     const msgKey = this.props.msg.key;
+    const likes = this.props.likes
     const onPressLikeCount = this.props.onPressLikeCount;
     if (onPressLikeCount) {
       console.warn('has onPressLikeCount')
-      onPressLikeCount({msgKey})
+      onPressLikeCount({msgKey, likes})
     }
   }
 

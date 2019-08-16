@@ -12,11 +12,13 @@ import {ThreadAndExtras, MsgAndExtras} from '../drivers/ssb';
 import Message from './messages/Message';
 import PlaceholderMessage from './messages/PlaceholderMessage';
 
+type Likes = Array<FeedId> | null;
+
 export type Props = {
   thread: ThreadAndExtras;
   publication$?: Stream<any> | null;
   selfFeedId: FeedId;
-  onPressLikeCount?: (ev: {msgKey: MsgId}) => void;
+  onPressLikeCount?: (ev: {msgKey: MsgId, likes: Likes}) => void;
   onPressLike?: (ev: {msgKey: string; like: boolean}) => void;
   onPressAuthor?: (ev: {authorFeedId: FeedId}) => void;
   onPressEtc?: (msg: Msg) => void;

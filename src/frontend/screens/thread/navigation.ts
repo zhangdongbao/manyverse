@@ -14,8 +14,10 @@ import {navOptions as accountsScreenNavOptions} from '../accounts';
 import {navOptions as profileScreenNavOptions} from '../profile';
 import {navOptions as rawMsgScreenNavOptions} from '../raw-msg';
 
+type Likes = Array<FeedId> | null;
+
 export type Actions = {
-  goToAccounts$: Stream<{msgKey: MsgId}>;
+  goToAccounts$: Stream<{msgKey: MsgId, likes: Likes}>;
   goToProfile$: Stream<{authorFeedId: FeedId}>;
   goToRawMsg$: Stream<Msg>;
 };

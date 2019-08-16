@@ -11,16 +11,21 @@ import {
   NavSource,
   PushCommand,
 } from 'cycle-native-navigation';
-import {Msg} from 'ssb-typescript';
+import {Msg, FeedId, MsgId} from 'ssb-typescript';
 import {SSBSource} from '../../drivers/ssb';
 import {ReactSource, h} from '@cycle/react';
 import {ReactElement} from 'react';
 import {Dimensions} from '../../global-styles/dimens';
-import RawFeed from '../../components/RawFeed';
 import {navOptions as rawMessageScreenNavOptions} from '../raw-msg';
 import {Screens} from '../..';
+import { View, Text } from 'react-native';
+
+type Likes = Array<FeedId> | null;
+
+export type Props = {msgKey: MsgId, likes: Likes};
 
 export type Sources = {
+  props: Stream<Props>;
   screen: ReactSource;
   navigation: NavSource;
   ssb: SSBSource;
@@ -30,6 +35,8 @@ export type Sinks = {
   screen: Stream<ReactElement<any>>;
   navigation: Stream<Command>;
 };
+
+export type State = Props;
 
 export const navOptions = {
   topBar: {
@@ -83,9 +90,15 @@ function intent(navSource: NavSource, reactSource: ReactSource) {
 
 export function accounts(sources: Sources): Sinks {
   const actions = intent(sources.navigation, sources.screen);
-  const vdom$ = sources.ssb.publicRawFeed$.map(getReadable =>
-    h(RawFeed, {sel: 'accounts', getReadable}),
-  );
+
+  const vdom$ = sources.props.map(props => {
+    return h(View, {},
+       [
+         h(Text, {}, props.msgKey + ' /n ' + props.likes + ' #' + (props.likes && props.likes.length)),
+       ]
+    )
+  });
+
   const command$ = navigation(actions);
 
   return {

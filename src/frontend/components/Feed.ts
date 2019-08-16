@@ -117,6 +117,8 @@ class InitialLoading extends PureComponent<any, any> {
   }
 }
 
+type Likes = Array<FeedId> | null;
+
 type Props = {
   getReadable: GetReadable<ThreadAndExtras> | null;
   getPublicationsReadable?: GetReadable<ThreadAndExtras> | null;
@@ -127,7 +129,7 @@ type Props = {
   style?: any;
   onInitialPullDone?: () => void;
   onRefresh?: () => void;
-  onPressLikeCount?: (ev: {msgKey: MsgId}) => void;
+  onPressLikeCount?: (ev: {msgKey: MsgId, likes: Likes}) => void;
   onPressLike?: (ev: {msgKey: MsgId; like: boolean}) => void;
   onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void;
   onPressAuthor?: (ev: {authorFeedId: FeedId}) => void;

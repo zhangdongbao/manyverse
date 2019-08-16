@@ -13,6 +13,8 @@ import {SSBSource} from '../../drivers/ssb';
 import {ReactSource} from '@cycle/react';
 import {KeyboardSource} from 'cycle-native-keyboard';
 
+type Likes = Array<FeedId> | null;
+
 export default function intent(
   reactSource: ReactSource,
   keyboardSource: KeyboardSource,
@@ -34,6 +36,7 @@ export default function intent(
 
     goToAccounts$: reactSource.select('thread').events('pressLikeCount') as Stream<{
       msgKey: MsgId;
+      likes: Likes;
     }>,
 
     likeMsg$: reactSource.select('thread').events('pressLike') as Stream<{

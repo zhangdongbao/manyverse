@@ -11,10 +11,12 @@ import {ThreadAndExtras, MsgAndExtras} from '../drivers/ssb';
 import Message from './messages/Message';
 import ExpandThread from './messages/ExpandThread';
 
+type Likes = Array<FeedId> | null;
+
 export type Props = {
   thread: ThreadAndExtras;
   selfFeedId: FeedId;
-  onPressLikeCount?: (ev: {msgKey: MsgId}) => void;
+  onPressLikeCount?: (ev: {msgKey: MsgId, likes: Likes}) => void;
   onPressLike?: (ev: {msgKey: MsgId; like: boolean}) => void;
   onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void;
   onPressAuthor?: (ev: {authorFeedId: FeedId}) => void;

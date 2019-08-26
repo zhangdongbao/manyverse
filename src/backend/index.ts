@@ -9,7 +9,6 @@ const path = require('path');
 const ssbKeys = require('ssb-keys');
 const mkdirp = require('mkdirp');
 const DHT = require('multiserver-dht');
-const rnBridge = require('rn-bridge');
 const rnChannelPlugin = require('multiserver-rn-channel');
 const NoauthTransformPlugin = require('multiserver/plugins/noauth');
 const WS = require('multiserver/plugins/ws');
@@ -23,16 +22,18 @@ import votesPlugin = require('./plugins/votes');
 import connUtilsPlugin = require('./plugins/connUtils');
 import manifest = require('./manifest');
 
-const appDataDir = rnBridge.app.datadir();
-const ssbPath = path.resolve(appDataDir, '.ssb');
-if (!fs.existsSync(ssbPath)) {
-  mkdirp.sync(ssbPath);
+if (!process.env.APP_DATA_DIR || !process.env.SSB_DIR) {
+  throw new Error('misconfigured default paths for the backend');
 }
-const keysPath = path.join(ssbPath, '/secret');
+
+if (!fs.existsSync(process.env.SSB_DIR)) {
+  mkdirp.sync(process.env.SSB_DIR);
+}
+const keysPath = path.join(process.env.SSB_DIR, '/secret');
 const keys = ssbKeys.loadOrCreateSync(keysPath);
 
 const config = makeConfig('ssb', {
-  path: ssbPath,
+  path: process.env.SSB_DIR,
   keys,
   manifest,
   friends: {
@@ -56,8 +57,8 @@ const config = makeConfig('ssb', {
   },
 });
 
-function noAuthTransform(_sbot: any, cfg: any) {
-  _sbot.multiserver.transform({
+function noAuthTransform(ssb: any, cfg: any) {
+  ssb.multiserver.transform({
     name: 'noauth',
     create: () =>
       NoauthTransformPlugin({
@@ -68,30 +69,34 @@ function noAuthTransform(_sbot: any, cfg: any) {
   });
 }
 
-function rnChannelTransport(_sbot: any) {
-  _sbot.multiserver.transport({
-    name: 'channel',
-    create: () => rnChannelPlugin(rnBridge.channel),
-  });
+function rnChannelTransport(ssb: any) {
+  if (process.env.MANYVERSE_PLATFORM !== 'mobile') return;
+  try {
+    const rnBridge = require('rn-' + 'bridge'); // bypass noderify
+    ssb.multiserver.transport({
+      name: 'channel',
+      create: () => rnChannelPlugin(rnBridge.channel),
+    });
+  } catch (err) {}
 }
 
-function wsTransport(_sbot: any) {
-  _sbot.multiserver.transport({
+function wsTransport(ssb: any) {
+  ssb.multiserver.transport({
     name: 'ws',
     create: () => WS({}),
   });
 }
 
-function dhtTransport(_sbot: any) {
-  _sbot.multiserver.transport({
+function dhtTransport(ssb: any) {
+  ssb.multiserver.transport({
     name: 'dht',
     create: (dhtConfig: any) =>
-      DHT({keys: _sbot.dhtInvite.channels(), port: dhtConfig.port}),
+      DHT({keys: ssb.dhtInvite.channels(), port: dhtConfig.port}),
   });
 }
 
 const bluetoothManager: any = BluetoothManager({
-  socketFolderPath: appDataDir,
+  socketFolderPath: process.env.APP_DATA_DIR,
   myIdent: '@' + keys.public,
   metadataServiceUUID: 'b4721184-46dc-4314-b031-bf52c2b197f3',
   controlSocketFilename: 'manyverse_bt_control.sock',

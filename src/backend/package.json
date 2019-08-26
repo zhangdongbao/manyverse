@@ -5,6 +5,10 @@
   "engines": {
     "node": "10.13.0"
   },
+  "scripts": {
+    "electron": "electron .",
+    "debug-electron": "electron --inspect-brk=5858 ."
+  },
   "dependencies": {
     "bindings-noderify-nodejs-mobile": "10.3.0",
     "bufferutil": "4.0.1",
@@ -51,6 +55,9 @@
     "ssb-typescript": "1.4.0",
     "utf-8-validate": "5.0.2",
     "utp-native-no-prebuild": "1.7.3-4"
+  },
+  "optionalDependencies": {
+    "electron": "^6.0.4"
   },
   "devDependencies": {
     "noderify": "4.1.0"

@@ -19,7 +19,8 @@
   },
   "files": [
     "src/backend/index.ts",
-    "src/backend/loader.ts",
+    "src/backend/loader.mobile.ts",
+    "src/backend/loader.desktop.ts",
     "src/backend/manifest.ts",
     "src/frontend/index.ts",
     "src/typings/react-native-bluetooth-status.d.ts",

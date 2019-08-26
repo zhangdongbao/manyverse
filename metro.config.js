@@ -5,7 +5,15 @@ const path = require('path');
 
 const blacklistRE = new RegExp(
   '(' +
-    [/nodejs-assets\/.*/, /android\/.*/, /ios\/.*/]
+    [
+      /android\/.*/,
+      /desktop\/.*/,
+      /e2e\/.*/,
+      /ios\/.*/,
+      /nodejs-assets\/.*/,
+      /patches\/.*/,
+      /tools\/.*/,
+    ]
       .map(escapeRegExp)
       .join('|') +
     ')$',

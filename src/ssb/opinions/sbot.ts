@@ -101,9 +101,7 @@ const create = (api: any) => {
     const ms = MultiServer([
       [
         rnChannelPlugin(nodejs.channel),
-        noAuthPlugin({
-          keys: toSodiumKeys(keys),
-        }),
+        noAuthPlugin({keys: toSodiumKeys(keys)}),
       ],
     ]);
 

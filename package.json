@@ -2,6 +2,7 @@
   "name": "manyverse",
   "version": "0.1908.24-beta",
   "private": true,
+  "main": "desktop/nodejs-project/loader.js",
   "scripts": {
     "lib": "tsc",
     "clean-bundler": "watchman watch-del-all && rm -rf $TMPDIR/react-*",
@@ -13,6 +14,10 @@
     "build-android-assets": "npm run lib && npm run propagate-replacements && npm run build-backend",
     "build-android-debug": "npm run build-android-assets && react-native run-android",
     "build-android-release": "npm run build-android-assets && cd android && ./gradlew assembleRelease && cd ..",
+    "build-desktop-backend": "./tools/build-desktop-backend && ./tools/minify-desktop-backend",
+    "build-desktop-frontend": "webpack --mode production --config desktop/webpack.config.js",
+    "build-desktop": "npm run build-desktop-backend && npm run build-desktop-frontend",
+    "desktop": "cd desktop/nodejs-project && npm run electron",
     "start": "npm run lib && npm run propagate-replacements && node node_modules/react-native/local-cli/cli.js start",
     "psdr": "./tools/print-service-desk-report.js",
     "test-e2e-android": "./tools/test-e2e-android",
@@ -114,6 +119,7 @@
     "add-stream": "~1.0.0",
     "appium": "1.14.0",
     "conventional-changelog": "~2.0.3",
+    "electron": "^6.0.4",
     "into-stream": "~3.1.0",
     "jase": "1.2.0",
     "left-pad": "1.3.0",
@@ -127,7 +133,9 @@
     "tape": "~4.9.1",
     "tslint": "~5.18.0",
     "typescript": "3.5.x",
-    "wd": "1.11.3"
+    "wd": "1.11.3",
+    "webpack": "^4.39.2",
+    "webpack-cli": "^3.3.7"
   },
   "react-native": {
     "os": "react-native-os-staltz",

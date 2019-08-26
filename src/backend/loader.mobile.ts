@@ -5,16 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import os = require('os');
-const path = require('path');
+import path = require('path');
 const rnBridge = require('rn-bridge');
 
-// Set default directory
-const nodejsProjectDir = path.resolve(rnBridge.app.datadir(), 'nodejs-project');
+process.env = process.env || {};
+process.env.MANYVERSE_PLATFORM = 'mobile';
+
+// Set default directories
+const appDataDir = (process.env.APP_DATA_DIR = rnBridge.app.datadir());
+process.env.SSB_DIR = path.resolve(appDataDir, '.ssb');
+const nodejsProjectDir = path.resolve(appDataDir, 'nodejs-project');
 os.homedir = () => nodejsProjectDir;
 process.cwd = () => nodejsProjectDir;
 
 // Force libsodium to use a WebAssembly implementation
-process.env = process.env || {};
 process.env.CHLORIDE_JS = 'yes';
 
 // Report JS backend crashes to Java, and in turn, to ACRA

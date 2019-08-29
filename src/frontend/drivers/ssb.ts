@@ -25,6 +25,8 @@ const ssbKeys = require('react-native-ssb-client-keys');
 const depjectCombine = require('depject');
 const colorHash = new (require('color-hash'))();
 
+export type Likes = Array<FeedId> | null;
+
 export type MsgAndExtras<C = Content> = Msg<C> & {
   value: {
     _$manyverse$metadata: {

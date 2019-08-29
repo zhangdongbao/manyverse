@@ -9,7 +9,7 @@ import {PureComponent} from 'react';
 import {h} from '@cycle/react';
 import {Msg, FeedId, MsgId} from 'ssb-typescript';
 import {isPostMsg, isContactMsg, isAboutMsg} from 'ssb-typescript/utils';
-import {MsgAndExtras} from '../../drivers/ssb';
+import {MsgAndExtras, Likes} from '../../drivers/ssb';
 import RawMessage from './RawMessage';
 import PostMessage from './PostMessage';
 import AboutMessage from './AboutMessage';
@@ -20,8 +20,6 @@ import {withXstreamProps} from 'react-xstream-hoc';
 export type State = {
   hasError: boolean;
 };
-
-type Likes = Array<FeedId> | null;
 
 export type Props = {
   msg: MsgAndExtras;

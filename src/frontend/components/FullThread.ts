@@ -8,11 +8,9 @@ import {Stream, Subscription, Listener} from 'xstream';
 import {Component, ReactElement} from 'react';
 import {h} from '@cycle/react';
 import {FeedId, Msg, MsgId} from 'ssb-typescript';
-import {ThreadAndExtras, MsgAndExtras} from '../drivers/ssb';
+import {ThreadAndExtras, MsgAndExtras, Likes} from '../drivers/ssb';
 import Message from './messages/Message';
 import PlaceholderMessage from './messages/PlaceholderMessage';
-
-type Likes = Array<FeedId> | null;
 
 export type Props = {
   thread: ThreadAndExtras;

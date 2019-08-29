@@ -18,6 +18,7 @@ import {Msg, FeedId, PostContent, MsgId} from 'ssb-typescript';
 import {Palette} from '../../global-styles/palette';
 import {Dimensions} from '../../global-styles/dimens';
 import {Typography} from '../../global-styles/typography';
+import { Likes } from '../../drivers/ssb';
 
 export const styles = StyleSheet.create({
   row: {
@@ -105,8 +106,6 @@ const iconProps = {
     name: 'comment-outline',
   },
 };
-
-type Likes = Array<FeedId> | null;
 
 export type Props = {
   msg: Msg;

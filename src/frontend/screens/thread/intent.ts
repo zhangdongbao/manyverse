@@ -9,11 +9,9 @@ import sample from 'xstream-sample';
 import {isReplyPostMsg} from 'ssb-typescript/utils';
 import {FeedId, Msg, MsgId} from 'ssb-typescript';
 import {State} from './model';
-import {SSBSource} from '../../drivers/ssb';
+import {SSBSource, Likes} from '../../drivers/ssb';
 import {ReactSource} from '@cycle/react';
 import {KeyboardSource} from 'cycle-native-keyboard';
-
-type Likes = Array<FeedId> | null;
 
 export default function intent(
   reactSource: ReactSource,

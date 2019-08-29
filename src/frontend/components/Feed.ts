@@ -19,7 +19,7 @@ import {Dimensions} from '../global-styles/dimens';
 import {Palette} from '../global-styles/palette';
 import CompactThread from './CompactThread';
 import PlaceholderMessage from './messages/PlaceholderMessage';
-import {GetReadable, ThreadAndExtras} from '../drivers/ssb';
+import {GetReadable, ThreadAndExtras, Likes} from '../drivers/ssb';
 import PullFlatList from 'pull-flat-list';
 import {Stream, Subscription, Listener} from 'xstream';
 import {propifyMethods} from 'react-propify-methods';
@@ -116,8 +116,6 @@ class InitialLoading extends PureComponent<any, any> {
     ]);
   }
 }
-
-type Likes = Array<FeedId> | null;
 
 type Props = {
   getReadable: GetReadable<ThreadAndExtras> | null;

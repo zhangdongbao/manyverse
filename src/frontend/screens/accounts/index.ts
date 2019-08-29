@@ -11,16 +11,14 @@ import {
   NavSource,
   PushCommand,
 } from 'cycle-native-navigation';
-import {Msg, FeedId, MsgId} from 'ssb-typescript';
-import {SSBSource} from '../../drivers/ssb';
+import {Msg, MsgId} from 'ssb-typescript';
+import {SSBSource, Likes} from '../../drivers/ssb';
 import {ReactSource, h} from '@cycle/react';
 import {ReactElement} from 'react';
 import {Dimensions} from '../../global-styles/dimens';
 import {navOptions as rawMessageScreenNavOptions} from '../raw-msg';
 import {Screens} from '../..';
 import { View, Text } from 'react-native';
-
-type Likes = Array<FeedId> | null;
 
 export type Props = {msgKey: MsgId, likes: Likes};
 

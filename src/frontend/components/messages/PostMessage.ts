@@ -12,10 +12,9 @@ import MessageHeader from './MessageHeader';
 import MessageFooter from './MessageFooter';
 import ContentWarning from './ContentWarning';
 import {PostContent as Post, FeedId, Msg, MsgId} from 'ssb-typescript';
+import {Likes} from '../../drivers/ssb';
 
 type CWPost = Post & {contentWarning?: string};
-
-type Likes = Array<FeedId> | null;
 
 export type Props = {
   msg: Msg<Post>;

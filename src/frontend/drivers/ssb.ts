@@ -395,6 +395,34 @@ export class SSBSource {
     );
   }
 
+  public liteAbout$(ids: Array<FeedId>): Stream<Array<About>> {
+    return this.api$
+      .map(async api => {
+        const aboutSocialValue = api.sbot.async.aboutSocialValue[0];
+        const abouts: Array<About> = [];
+        for (const id of ids) {
+          // Fetch name
+          const [, result1] = await runAsync<string>(aboutSocialValue)({
+            key: 'name',
+            dest: id,
+          });
+          const name = result1 || shortFeedId(id);
+
+          // Fetch avatar
+          const [, result2] = await runAsync(aboutSocialValue)({
+            key: 'image',
+            dest: id,
+          });
+          const imageUrl = imageToImageUrl(result2);
+
+          abouts.push({name, imageUrl});
+        }
+        return abouts;
+      })
+      .map(promise => xs.fromPromise(promise))
+      .flatten();
+  }
+
   public profileAbout$(id: FeedId): Stream<AboutAndExtras> {
     return this.api$
       .map(api => {

@@ -18,8 +18,9 @@ import { ReactElement } from "react";
 import { Dimensions } from "../../global-styles/dimens";
 import { navOptions as rawMessageScreenNavOptions } from "../raw-msg";
 import { Screens } from "../..";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { Reducer, StateSource } from "@cycle/state";
+import ListItemAccount, { Props as ListProps } from "../../components/ListItemAccount"
 
 export type Props = { msgKey: MsgId; likes: Likes };
 
@@ -94,20 +95,22 @@ function intent(navSource: NavSource, reactSource: ReactSource) {
 export function accounts(sources: Sources): Sinks {
   const actions = intent(sources.navigation, sources.screen);
 
-  const vdom$ = sources.state.stream
-    .map(state => {
-      const likers = state.likers
+  const vdom$ = sources.state.stream.map(state => {
+    const likers = state.likers;
 
-      return h(View, {}, [
-        h(
-          Text,
-          {},
-          `${likers.map(like => like.name).join(", ")} # ${likers
-            .map(like => like.imageUrl)
-            .join(", ")}`
-        )
-      ]);
-    });
+    return h(
+      View,
+      {},
+      likers.map(like => {
+        return h(ListItemAccount, {
+          name: like.name,
+          imageUrl: like.imageUrl,
+          id: like.id,
+          // onPress: onPressMsg
+        } as ListProps);
+      })
+    );
+  });
 
   const command$ = navigation(actions);
 

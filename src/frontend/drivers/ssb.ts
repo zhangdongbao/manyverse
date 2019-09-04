@@ -415,7 +415,7 @@ export class SSBSource {
           });
           const imageUrl = imageToImageUrl(result2);
 
-          abouts.push({name, imageUrl});
+          abouts.push({name, imageUrl, id});
         }
         return abouts;
       })

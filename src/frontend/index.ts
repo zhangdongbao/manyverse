@@ -59,7 +59,7 @@ export const screens: {[k in Screens]?: (so: any) => any} = {
   [Screens.Profile]: withState(profile),
   [Screens.ProfileEdit]: withState(editProfile),
   [Screens.Biography]: withState(biography),
-  [Screens.Accounts]: accounts,
+  [Screens.Accounts]: withState(accounts),
   [Screens.RawDatabase]: rawDatabase,
   [Screens.RawMessage]: rawMessage,
 };

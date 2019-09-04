@@ -37,14 +37,16 @@ export const styles = StyleSheet.create({
   },
 
   likes: {
-    marginTop: Dimensions.verticalSpaceSmall,
+    marginTop: Dimensions.verticalSpaceTiny,
+    marginBottom: Dimensions.verticalSpaceTiny,
     fontSize: Typography.fontSizeSmall,
     fontFamily: Typography.fontFamilyReadableText,
     color: Palette.textWeak
   },
 
   likesHidden: {
-    marginTop: Dimensions.verticalSpaceSmall,
+    marginTop: Dimensions.verticalSpaceTiny,
+    marginBottom: Dimensions.verticalSpaceTiny,
     fontSize: Typography.fontSizeSmall,
     fontFamily: Typography.fontFamilyReadableText,
     color: Palette.backgroundText

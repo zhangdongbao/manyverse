@@ -26,9 +26,8 @@ export default function navigation(
   navSource: NavSource,
   state$: Stream<State>,
 ): Stream<Command> {
-  const toAccounts$ = actions.goToAccounts$.map(props => {
-    console.warn('clicked count')
-    return ({
+  const toAccounts$ = actions.goToAccounts$.map(props =>
+    ({
       type: 'push',
       layout: {
         component: {
@@ -37,13 +36,12 @@ export default function navigation(
           options: accountsScreenNavOptions,
         },
       },
-    } as Command)},
+    } as Command),
   );
 
   const toProfile$ = actions.goToProfile$.compose(sampleCombine(state$)).map(
-    ([ev, state]) => {
-      console.warn('clicked profile name')
-      return ({
+    ([ev, state]) =>
+      ({
         type: 'push',
         layout: {
           component: {
@@ -55,7 +53,7 @@ export default function navigation(
             options: profileScreenNavOptions,
           },
         },
-      } as Command)},
+      } as Command),
   );
 
   const toRawMsg$ = actions.goToRawMsg$.map(

@@ -169,12 +169,10 @@ export default class MessageFooter extends Component<Props, State> {
   }
 
   private onPressLikeCountHandler() {
-    console.warn("tapped the like count");
     const msgKey = this.props.msg.key;
     const likes = this.props.likes;
     const onPressLikeCount = this.props.onPressLikeCount;
     if (onPressLikeCount) {
-      console.warn("has onPressLikeCount");
       onPressLikeCount({ msgKey, likes });
     }
   }

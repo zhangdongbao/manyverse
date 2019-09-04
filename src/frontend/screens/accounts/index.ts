@@ -18,9 +18,11 @@ import { ReactElement } from "react";
 import { Dimensions } from "../../global-styles/dimens";
 import { navOptions as rawMessageScreenNavOptions } from "../raw-msg";
 import { Screens } from "../..";
-import { View } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import { Reducer, StateSource } from "@cycle/state";
-import ListItemAccount, { Props as ListProps } from "../../components/ListItemAccount"
+import ListItemAccount, {
+  Props as ListProps
+} from "../../components/ListItemAccount";
 
 export type Props = { msgKey: MsgId; likes: Likes };
 
@@ -41,6 +43,13 @@ export type Sinks = {
 export type State = {
   likers: Array<About>;
 };
+
+export const styles = StyleSheet.create({
+  container: {
+    alignSelf: "stretch",
+    flex: 1
+  }
+});
 
 export const navOptions = {
   topBar: {
@@ -99,13 +108,15 @@ export function accounts(sources: Sources): Sinks {
     const likers = state.likers;
 
     return h(
-      View,
-      {},
+      ScrollView,
+      {
+        style: styles.container
+      },
       likers.map(like => {
         return h(ListItemAccount, {
           name: like.name,
           imageUrl: like.imageUrl,
-          id: like.id,
+          id: like.id
           // onPress: onPressMsg
         } as ListProps);
       })

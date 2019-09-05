@@ -18,11 +18,12 @@ import {ReactElement} from 'react';
 import {Dimensions} from '../../global-styles/dimens';
 import {navOptions as rawMessageScreenNavOptions} from '../raw-msg';
 import {Screens} from '../..';
-import {StyleSheet, ScrollView} from 'react-native';
+import {StyleSheet, ScrollView, RefreshControl} from 'react-native';
 import {Reducer, StateSource} from '@cycle/state';
 import ListItemAccount, {
   Props as ListProps,
 } from '../../components/ListItemAccount';
+import {Palette} from '../../global-styles/palette';
 
 export type Props = {msgKey: MsgId; likes: Likes};
 
@@ -111,6 +112,10 @@ export function accounts(sources: Sources): Sinks {
       ScrollView,
       {
         style: styles.container,
+        refreshControl: h(RefreshControl, {
+          refreshing: state.likers.length === 0,
+          colors: [Palette.backgroundBrand],
+        }),
       },
       likers.map(like => {
         return h(ListItemAccount, {
@@ -125,7 +130,12 @@ export function accounts(sources: Sources): Sinks {
 
   const command$ = navigation(actions);
 
-  const reducer$ = sources.props
+  const initialReducer$ = xs.of(function initialReducer(prev: State): State {
+    if (prev) return prev;
+    else return {likers: []};
+  });
+
+  const aboutsReducer$ = sources.props
     .filter(props => !!props.likes)
     .map(props => sources.ssb.liteAbout$(props.likes!))
     .flatten()
@@ -134,6 +144,8 @@ export function accounts(sources: Sources): Sinks {
         return {likers: abouts};
       };
     });
+
+  const reducer$ = xs.merge(initialReducer$, aboutsReducer$);
 
   return {
     screen: vdom$,

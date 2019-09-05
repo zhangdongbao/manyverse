@@ -81,10 +81,10 @@ export default class ListItemAccounts extends Component<Props> {
   }
 
   public render() {
-    const { name, imageUrl} = this.props;
+    const {name, imageUrl} = this.props;
     const touchableProps = {
       background: TouchableNativeFeedback.SelectableBackground(),
-      //onPress: () => this._onPress(),
+      // onPress: () => this._onPress(),
     };
 
     const authorNameText = h(
@@ -105,9 +105,7 @@ export default class ListItemAccounts extends Component<Props> {
             size: Dimensions.avatarSizeNormal,
             style: styles.avatar,
           }),
-          h(View, {style: styles.authorColumn}, [
-            authorNameText,
-          ]),
+          h(View, {style: styles.authorColumn}, [authorNameText]),
         ]),
       ]),
     ]);

@@ -18,13 +18,13 @@ import {navOptions as rawMsgScreenNavOptions} from '../raw-msg';
 import {MsgId, FeedId, Msg} from 'ssb-typescript';
 import {Screens} from '../..';
 import {State} from './model';
-import { Likes } from '../../drivers/ssb';
+import {Likes} from '../../drivers/ssb';
 
 export type Actions = {
   goToCompose$: Stream<null>;
   goToEdit$: Stream<null>;
   goToBio$: Stream<any>;
-  goToAccounts$: Stream<{msgKey: MsgId, likes: Likes}>;
+  goToAccounts$: Stream<{msgKey: MsgId; likes: Likes}>;
   goToProfile$: Stream<{authorFeedId: FeedId}>;
   goToThread$: Stream<{rootMsgId: MsgId; replyToMsgId?: MsgId}>;
   goToRawMsg$: Stream<Msg>;
@@ -81,17 +81,18 @@ export default function navigation(
       } as Command),
   );
 
-  const toAccounts$ = actions.goToAccounts$.map(props =>
-    ({
-      type: 'push',
-      layout: {
-        component: {
-          name: Screens.Accounts,
-          passProps: props,
-          options: accountsScreenNavOptions,
+  const toAccounts$ = actions.goToAccounts$.map(
+    props =>
+      ({
+        type: 'push',
+        layout: {
+          component: {
+            name: Screens.Accounts,
+            passProps: props,
+            options: accountsScreenNavOptions,
+          },
         },
-      },
-    } as Command),
+      } as Command),
   );
 
   const toOtherProfile$ = actions.goToProfile$

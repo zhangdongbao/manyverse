@@ -4,27 +4,27 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import xs, { Stream } from "xstream";
+import xs, {Stream} from 'xstream';
 import {
   Command,
   PopCommand,
   NavSource,
-  PushCommand
-} from "cycle-native-navigation";
-import { Msg, MsgId, About } from "ssb-typescript";
-import { SSBSource, Likes } from "../../drivers/ssb";
-import { ReactSource, h } from "@cycle/react";
-import { ReactElement } from "react";
-import { Dimensions } from "../../global-styles/dimens";
-import { navOptions as rawMessageScreenNavOptions } from "../raw-msg";
-import { Screens } from "../..";
-import { StyleSheet, ScrollView } from "react-native";
-import { Reducer, StateSource } from "@cycle/state";
+  PushCommand,
+} from 'cycle-native-navigation';
+import {Msg, MsgId, About} from 'ssb-typescript';
+import {SSBSource, Likes} from '../../drivers/ssb';
+import {ReactSource, h} from '@cycle/react';
+import {ReactElement} from 'react';
+import {Dimensions} from '../../global-styles/dimens';
+import {navOptions as rawMessageScreenNavOptions} from '../raw-msg';
+import {Screens} from '../..';
+import {StyleSheet, ScrollView} from 'react-native';
+import {Reducer, StateSource} from '@cycle/state';
 import ListItemAccount, {
-  Props as ListProps
-} from "../../components/ListItemAccount";
+  Props as ListProps,
+} from '../../components/ListItemAccount';
 
-export type Props = { msgKey: MsgId; likes: Likes };
+export type Props = {msgKey: MsgId; likes: Likes};
 
 export type Sources = {
   props: Stream<Props>;
@@ -46,9 +46,9 @@ export type State = {
 
 export const styles = StyleSheet.create({
   container: {
-    alignSelf: "stretch",
-    flex: 1
-  }
+    alignSelf: 'stretch',
+    flex: 1,
+  },
 });
 
 export const navOptions = {
@@ -57,13 +57,13 @@ export const navOptions = {
     drawBehind: false,
     height: Dimensions.toolbarAndroidHeight,
     title: {
-      text: "Likes"
+      text: 'Likes',
     },
     backButton: {
-      icon: require("../../../../images/icon-arrow-left.png"),
-      visible: true
-    }
-  }
+      icon: require('../../../../images/icon-arrow-left.png'),
+      visible: true,
+    },
+  },
 };
 
 export type Actions = {
@@ -73,21 +73,21 @@ export type Actions = {
 
 function navigation(actions: Actions) {
   const pop$ = actions.goBack$.mapTo({
-    type: "pop"
+    type: 'pop',
   } as PopCommand);
 
   const toRawMsg$ = actions.goToRawMsg$.map(
     msg =>
       ({
-        type: "push",
+        type: 'push',
         layout: {
           component: {
             name: Screens.RawMessage,
-            passProps: { msg },
-            options: rawMessageScreenNavOptions
-          }
-        }
-      } as PushCommand)
+            passProps: {msg},
+            options: rawMessageScreenNavOptions,
+          },
+        },
+      } as PushCommand),
   );
 
   return xs.merge(pop$, toRawMsg$);
@@ -97,7 +97,7 @@ function intent(navSource: NavSource, reactSource: ReactSource) {
   return {
     goBack$: navSource.backPress(),
 
-    goToRawMsg$: reactSource.select("accounts").events("pressMsg")
+    goToRawMsg$: reactSource.select('accounts').events('pressMsg'),
   };
 }
 
@@ -110,16 +110,16 @@ export function accounts(sources: Sources): Sinks {
     return h(
       ScrollView,
       {
-        style: styles.container
+        style: styles.container,
       },
       likers.map(like => {
         return h(ListItemAccount, {
           name: like.name,
           imageUrl: like.imageUrl,
-          id: like.id
+          id: like.id,
           // onPress: onPressMsg
         } as ListProps);
-      })
+      }),
     );
   });
 
@@ -131,13 +131,13 @@ export function accounts(sources: Sources): Sinks {
     .flatten()
     .map(abouts => {
       return function propsReducer(): State {
-        return { likers: abouts };
+        return {likers: abouts};
       };
     });
 
   return {
     screen: vdom$,
     navigation: command$,
-    state: reducer$
+    state: reducer$,
   };
 }

@@ -20,7 +20,7 @@ export type Props = {
   msg: Msg<Post>;
   name: string | null;
   imageUrl: string | null;
-  likes: Array<FeedId> | null;
+  likes: Likes;
   selfFeedId: FeedId;
   onPressLikeCount?: (ev: {msgKey: MsgId; likes: Likes}) => void;
   onPressLike?: (ev: {msgKey: MsgId; like: boolean}) => void;

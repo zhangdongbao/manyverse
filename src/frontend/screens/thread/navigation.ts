@@ -13,10 +13,10 @@ import {Screens} from '../..';
 import {navOptions as accountsScreenNavOptions} from '../accounts';
 import {navOptions as profileScreenNavOptions} from '../profile';
 import {navOptions as rawMsgScreenNavOptions} from '../raw-msg';
-import { Likes } from '../../drivers/ssb';
+import {Likes} from '../../drivers/ssb';
 
 export type Actions = {
-  goToAccounts$: Stream<{msgKey: MsgId, likes: Likes}>;
+  goToAccounts$: Stream<{msgKey: MsgId; likes: Likes}>;
   goToProfile$: Stream<{authorFeedId: FeedId}>;
   goToRawMsg$: Stream<Msg>;
 };
@@ -26,17 +26,18 @@ export default function navigation(
   navSource: NavSource,
   state$: Stream<State>,
 ): Stream<Command> {
-  const toAccounts$ = actions.goToAccounts$.map(props =>
-    ({
-      type: 'push',
-      layout: {
-        component: {
-          name: Screens.Accounts,
-          passProps: props,
-          options: accountsScreenNavOptions,
+  const toAccounts$ = actions.goToAccounts$.map(
+    props =>
+      ({
+        type: 'push',
+        layout: {
+          component: {
+            name: Screens.Accounts,
+            passProps: props,
+            options: accountsScreenNavOptions,
+          },
         },
-      },
-    } as Command),
+      } as Command),
   );
 
   const toProfile$ = actions.goToProfile$.compose(sampleCombine(state$)).map(

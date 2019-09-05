@@ -14,7 +14,7 @@ import {
   TriggerMsgCypherlink,
 } from '../../../drivers/eventbus';
 import {Screens} from '../../..';
-import { Likes } from '../../../drivers/ssb';
+import {Likes} from '../../../drivers/ssb';
 
 export type LikeEvent = {msgKey: string; like: boolean};
 export type ProfileNavEvent = {authorFeedId: FeedId};
@@ -29,10 +29,9 @@ export default function intent(
   return {
     goToCompose$: fabPress$.filter(action => action === 'compose'),
 
-    goToAccounts$: reactSource.select('publicFeed').events('pressLikeCount') as Stream<{
-      msgKey: MsgId;
-      likes: Likes;
-    }>,
+    goToAccounts$: reactSource
+      .select('publicFeed')
+      .events('pressLikeCount') as Stream<{msgKey: MsgId; likes: Likes}>,
 
     likeMsg$: reactSource.select('publicFeed').events('pressLike') as Stream<
       LikeEvent

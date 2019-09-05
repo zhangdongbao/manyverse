@@ -14,7 +14,7 @@ import ExpandThread from './messages/ExpandThread';
 export type Props = {
   thread: ThreadAndExtras;
   selfFeedId: FeedId;
-  onPressLikeCount?: (ev: {msgKey: MsgId, likes: Likes}) => void;
+  onPressLikeCount?: (ev: {msgKey: MsgId; likes: Likes}) => void;
   onPressLike?: (ev: {msgKey: MsgId; like: boolean}) => void;
   onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void;
   onPressAuthor?: (ev: {authorFeedId: FeedId}) => void;

@@ -32,10 +32,9 @@ export default function intent(
 
     keyboardDisappeared$: keyboardSource.events('keyboardDidHide').mapTo(null),
 
-    goToAccounts$: reactSource.select('thread').events('pressLikeCount') as Stream<{
-      msgKey: MsgId;
-      likes: Likes;
-    }>,
+    goToAccounts$: reactSource
+      .select('thread')
+      .events('pressLikeCount') as Stream<{msgKey: MsgId; likes: Likes}>,
 
     likeMsg$: reactSource.select('thread').events('pressLike') as Stream<{
       msgKey: string;

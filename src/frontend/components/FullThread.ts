@@ -16,7 +16,7 @@ export type Props = {
   thread: ThreadAndExtras;
   publication$?: Stream<any> | null;
   selfFeedId: FeedId;
-  onPressLikeCount?: (ev: {msgKey: MsgId, likes: Likes}) => void;
+  onPressLikeCount?: (ev: {msgKey: MsgId; likes: Likes}) => void;
   onPressLike?: (ev: {msgKey: string; like: boolean}) => void;
   onPressAuthor?: (ev: {authorFeedId: FeedId}) => void;
   onPressEtc?: (msg: Msg) => void;
@@ -78,7 +78,13 @@ export default class FullThread extends Component<Props, State> {
   }
 
   private renderMessage(msg: MsgAndExtras) {
-    const {selfFeedId, onPressLikeCount, onPressLike, onPressAuthor, onPressEtc} = this.props;
+    const {
+      selfFeedId,
+      onPressLikeCount,
+      onPressLike,
+      onPressAuthor,
+      onPressEtc,
+    } = this.props;
     return h(Message, {
       msg,
       ['key' as any]: msg.key,

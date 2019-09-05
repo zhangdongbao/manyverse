@@ -26,14 +26,17 @@ export default function navigation(
   navSource: NavSource,
   state$: Stream<State>,
 ): Stream<Command> {
-  const toAccounts$ = actions.goToAccounts$.map(
-    props =>
+  const toAccounts$ = actions.goToAccounts$.compose(sampleCombine(state$)).map(
+    ([ev, state]) =>
       ({
         type: 'push',
         layout: {
           component: {
             name: Screens.Accounts,
-            passProps: props,
+            passProps: {
+              ...ev,
+              selfFeedId: state.selfFeedId,
+            },
             options: accountsScreenNavOptions,
           },
         },

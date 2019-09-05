@@ -5,27 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import xs, {Stream} from 'xstream';
-import {
-  Command,
-  PopCommand,
-  NavSource,
-  PushCommand,
-} from 'cycle-native-navigation';
-import {Msg, MsgId, About} from 'ssb-typescript';
+import sampleCombine from 'xstream/extra/sampleCombine';
+import {Command, PopCommand, NavSource} from 'cycle-native-navigation';
+import {MsgId, About, FeedId} from 'ssb-typescript';
 import {SSBSource, Likes} from '../../drivers/ssb';
 import {ReactSource, h} from '@cycle/react';
 import {ReactElement} from 'react';
 import {Dimensions} from '../../global-styles/dimens';
-import {navOptions as rawMessageScreenNavOptions} from '../raw-msg';
+import {navOptions as profileScreenNavOptions} from '../profile';
 import {Screens} from '../..';
 import {StyleSheet, ScrollView, RefreshControl} from 'react-native';
 import {Reducer, StateSource} from '@cycle/state';
-import ListItemAccount, {
-  Props as ListProps,
-} from '../../components/ListItemAccount';
+import AccountsList, {Props as ListProps} from '../../components/AccountsList';
 import {Palette} from '../../global-styles/palette';
 
-export type Props = {msgKey: MsgId; likes: Likes};
+export type Props = {
+  selfFeedId: FeedId;
+  msgKey: MsgId;
+  likes: Likes;
+};
 
 export type Sources = {
   props: Stream<Props>;
@@ -43,6 +41,7 @@ export type Sinks = {
 
 export type State = {
   likers: Array<About>;
+  selfFeedId: FeedId;
 };
 
 export const styles = StyleSheet.create({
@@ -69,36 +68,39 @@ export const navOptions = {
 
 export type Actions = {
   goBack$: Stream<any>;
-  goToRawMsg$: Stream<Msg>;
+  goToProfile$: Stream<{id: FeedId}>;
 };
 
-function navigation(actions: Actions) {
+function navigation(actions: Actions, state$: Stream<State>) {
   const pop$ = actions.goBack$.mapTo({
     type: 'pop',
   } as PopCommand);
 
-  const toRawMsg$ = actions.goToRawMsg$.map(
-    msg =>
+  const toProfile$ = actions.goToProfile$.compose(sampleCombine(state$)).map(
+    ([ev, state]) =>
       ({
         type: 'push',
         layout: {
           component: {
-            name: Screens.RawMessage,
-            passProps: {msg},
-            options: rawMessageScreenNavOptions,
+            name: Screens.Profile,
+            passProps: {
+              selfFeedId: state.selfFeedId,
+              feedId: ev.id,
+            },
+            options: profileScreenNavOptions,
           },
         },
-      } as PushCommand),
+      } as Command),
   );
 
-  return xs.merge(pop$, toRawMsg$);
+  return xs.merge(pop$, toProfile$);
 }
 
 function intent(navSource: NavSource, reactSource: ReactSource) {
   return {
     goBack$: navSource.backPress(),
 
-    goToRawMsg$: reactSource.select('accounts').events('pressMsg'),
+    goToProfile$: reactSource.select('accounts').events('pressAccount'),
   };
 }
 
@@ -117,35 +119,34 @@ export function accounts(sources: Sources): Sinks {
           colors: [Palette.backgroundBrand],
         }),
       },
-      likers.map(like => {
-        return h(ListItemAccount, {
-          name: like.name,
-          imageUrl: like.imageUrl,
-          id: like.id,
-          // onPress: onPressMsg
-        } as ListProps);
-      }),
+      [h(AccountsList, {sel: 'accounts', accounts: likers} as ListProps)],
     );
   });
 
-  const command$ = navigation(actions);
+  const command$ = navigation(actions, sources.state.stream);
 
-  const initialReducer$ = xs.of(function initialReducer(prev: State): State {
-    if (prev) return prev;
-    else return {likers: []};
-  });
+  const propsReducer$ = sources.props.map(
+    props =>
+      function propsReducer(prev?: State): State {
+        if (prev) {
+          return {...prev, selfFeedId: props.selfFeedId};
+        } else {
+          return {likers: [], selfFeedId: props.selfFeedId};
+        }
+      },
+  );
 
   const aboutsReducer$ = sources.props
     .filter(props => !!props.likes)
     .map(props => sources.ssb.liteAbout$(props.likes!))
     .flatten()
     .map(abouts => {
-      return function propsReducer(): State {
-        return {likers: abouts};
+      return function propsReducer(prev: State): State {
+        return {...prev, likers: abouts};
       };
     });
 
-  const reducer$ = xs.merge(initialReducer$, aboutsReducer$);
+  const reducer$ = xs.merge(propsReducer$, aboutsReducer$);
 
   return {
     screen: vdom$,

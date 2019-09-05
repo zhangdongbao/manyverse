@@ -4,14 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import {Component} from 'react';
+import {PureComponent} from 'react';
 import {h} from '@cycle/react';
 import {Text, View, TouchableNativeFeedback, StyleSheet} from 'react-native';
-import {Msg} from 'ssb-typescript';
+import {FeedId} from 'ssb-typescript';
 import {Dimensions} from '../global-styles/dimens';
 import {Palette} from '../global-styles/palette';
 import {Typography} from '../global-styles/typography';
 import Avatar from './Avatar';
+import React = require('react');
 
 export const styles = StyleSheet.create({
   row: {
@@ -56,35 +57,19 @@ export const styles = StyleSheet.create({
   },
 });
 
-export type Props = {
+type AccountProps = {
   name: string;
-  imageUrl: string;
+  imageUrl?: string;
   id: string;
-  onPress?: (ev: {msg: Msg}) => void;
+  onPress?: () => void;
 };
 
-export default class ListItemAccounts extends Component<Props> {
-  // private _onPress() {
-  //   const {onPress} = this.props;
-  //   if (onPress) {
-  //     onPress({msg});
-  //   }
-  // }
-
-  public shouldComponentUpdate(nextProps: Props) {
-    const prevProps = this.props;
-    return (
-      nextProps.id !== prevProps.id ||
-      nextProps.name !== prevProps.name ||
-      nextProps.imageUrl !== prevProps.imageUrl
-    );
-  }
-
+class Account extends PureComponent<AccountProps> {
   public render() {
-    const {name, imageUrl} = this.props;
+    const {name, imageUrl, onPress} = this.props;
     const touchableProps = {
       background: TouchableNativeFeedback.SelectableBackground(),
-      // onPress: () => this._onPress(),
+      onPress,
     };
 
     const authorNameText = h(
@@ -109,5 +94,27 @@ export default class ListItemAccounts extends Component<Props> {
         ]),
       ]),
     ]);
+  }
+}
+
+export type Props = {
+  accounts: Array<{name: string; imageUrl: string; id: string}>;
+  onPressAccount?: (ev: {id: FeedId}) => void;
+};
+
+export default class AccountsList extends PureComponent<Props> {
+  public render() {
+    const {onPressAccount} = this.props;
+    return h(
+      React.Fragment,
+      this.props.accounts.map(({id, name, imageUrl}) =>
+        h<AccountProps>(Account, {
+          name,
+          imageUrl,
+          id,
+          onPress: () => onPressAccount && onPressAccount({id}),
+        }),
+      ),
+    );
   }
 }

@@ -395,11 +395,11 @@ export class SSBSource {
     );
   }
 
-  public liteAbout$(ids: Array<FeedId>): Stream<Array<About>> {
+  public liteAbout$(ids: Array<FeedId>): Stream<Array<AboutAndExtras>> {
     return this.api$
       .map(async api => {
         const aboutSocialValue = api.sbot.async.aboutSocialValue[0];
-        const abouts: Array<About> = [];
+        const abouts: Array<AboutAndExtras> = [];
         for (const id of ids) {
           // Fetch name
           const [, result1] = await runAsync<string>(aboutSocialValue)({

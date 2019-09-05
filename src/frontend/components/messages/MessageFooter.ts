@@ -37,16 +37,18 @@ export const styles = StyleSheet.create({
   },
 
   likes: {
-    marginTop: Dimensions.verticalSpaceTiny,
-    marginBottom: Dimensions.verticalSpaceTiny,
+    paddingTop: Dimensions.verticalSpaceSmall,
+    paddingBottom: Dimensions.verticalSpaceSmall,
+    paddingRight: Dimensions.horizontalSpaceSmall,
     fontSize: Typography.fontSizeSmall,
     fontFamily: Typography.fontFamilyReadableText,
     color: Palette.textWeak,
   },
 
   likesHidden: {
-    marginTop: Dimensions.verticalSpaceTiny,
-    marginBottom: Dimensions.verticalSpaceTiny,
+    paddingTop: Dimensions.verticalSpaceSmall,
+    paddingBottom: Dimensions.verticalSpaceSmall,
+    paddingRight: Dimensions.horizontalSpaceSmall,
     fontSize: Typography.fontSizeSmall,
     fontFamily: Typography.fontFamilyReadableText,
     color: Palette.backgroundText,
@@ -54,7 +56,7 @@ export const styles = StyleSheet.create({
 
   likeButton: {
     flexDirection: 'row',
-    paddingTop: Dimensions.verticalSpaceSmall + 6,
+    paddingTop: Dimensions.verticalSpaceBig,
     paddingBottom: Dimensions.verticalSpaceBig,
     paddingLeft: 1,
     paddingRight: Dimensions.horizontalSpaceBig,
@@ -71,7 +73,7 @@ export const styles = StyleSheet.create({
 
   replyButton: {
     flexDirection: 'row',
-    paddingTop: Dimensions.verticalSpaceSmall + 6,
+    paddingTop: Dimensions.verticalSpaceBig,
     paddingBottom: Dimensions.verticalSpaceBig,
     paddingLeft: Dimensions.horizontalSpaceBig,
     paddingRight: Dimensions.horizontalSpaceBig,

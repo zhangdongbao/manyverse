@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import xs, {Stream, MemoryStream, Listener} from 'xstream';
-import backoff from 'xstream-backoff';
 import {
   Msg,
   Content,
@@ -16,17 +15,10 @@ import {
 } from 'ssb-typescript';
 const nodejs = require('nodejs-mobile-react-native');
 import {Platform} from 'react-native';
-import {
-  isMsg,
-  isRootPostMsg,
-  isReplyPostMsg,
-  isPublic,
-} from 'ssb-typescript/utils';
-import {Thread as ThreadData} from 'ssb-threads/types';
 import xsFromCallback from 'xstream-from-callback';
 import runAsync = require('promisify-tuple');
 import xsFromPullStream from 'xstream-from-pull-stream';
-import {Readable, Callback} from 'pull-stream';
+import {Readable} from 'pull-stream';
 import {
   MsgAndExtras,
   PrivateThreadAndExtras,
@@ -54,138 +46,6 @@ export type RestoreIdentityResponse =
   | 'WRONG_LENGTH'
   | 'INCORRECT'
   | 'IDENTITY_READY';
-
-function mutateMsgWithLiveExtras(ssb: any) {
-  const getAbout = ssb.cachedAbout.socialValue;
-  return async (msg: Msg, cb: Callback<MsgAndExtras>) => {
-    if (!isMsg(msg) || !msg.value) return cb(null, msg as any);
-
-    // Fetch name
-    const nameOpts = {key: 'name', dest: msg.value.author};
-    const [e1, name] = await runAsync<string | undefined>(getAbout)(nameOpts);
-    if (e1) return cb(e1);
-
-    // Fetch avatar
-    const avatarOpts = {key: 'image', dest: msg.value.author};
-    const [e2, val] = await runAsync(getAbout)(avatarOpts);
-    if (e2) return cb(e2);
-    const imageUrl = imageToImageUrl(val);
-
-    // Get likes stream
-    const likes = xsFromPullStream(ssb.votes.voterStream(msg.key)).startWith(
-      [],
-    );
-
-    // Create msg object
-    const m = msg as MsgAndExtras;
-    m.value._$manyverse$metadata = m.value._$manyverse$metadata || {
-      likes,
-      about: {name, imageUrl},
-    };
-
-    // Add name of the target contact, if any
-    const content = msg.value.content;
-    if (!content || content.type !== 'contact' || !content.contact) {
-      return cb(null, m);
-    }
-    const dest: FeedId = content.contact;
-    const dOpts = {key: 'name', dest};
-    const [e3, destName] = await runAsync<string | undefined>(getAbout)(dOpts);
-    if (e3) return cb(e3);
-    m.value._$manyverse$metadata.contact = {name: destName};
-    cb(null, m);
-  };
-}
-
-function mutateThreadWithLiveExtras(ssb: any) {
-  return async (thread: ThreadData, cb: Callback<ThreadAndExtras>) => {
-    for (const msg of thread.messages) {
-      await runAsync(mutateMsgWithLiveExtras(ssb))(msg);
-    }
-    cb(null, thread as ThreadAndExtras);
-  };
-}
-
-function getRecipient(recp: string | Record<string, any>): string | undefined {
-  if (typeof recp === 'object' && Ref.isFeed(recp.link)) {
-    return recp.link;
-  }
-  if (typeof recp === 'string' && Ref.isFeed(recp)) {
-    return recp;
-  }
-}
-
-function mutatePrivateThreadWithLiveExtras(ssb: any) {
-  const getAbout = ssb.cachedAbout.socialValue;
-  return async (thread: ThreadData, cb: Callback<PrivateThreadAndExtras>) => {
-    for (const msg of thread.messages) {
-      await runAsync(mutateMsgWithLiveExtras(ssb))(msg);
-    }
-    const root: Msg<Content> | undefined = thread.messages[0];
-    const pvthread: PrivateThreadAndExtras = thread as any;
-    if (root && root?.value?.content?.recps) {
-      pvthread.recps = [];
-      for (const recp of root?.value?.content?.recps) {
-        const id = getRecipient(recp);
-        if (!id) continue;
-
-        // Fetch name
-        const nameOpts = {key: 'name', dest: id};
-        const [e1, name] = await runAsync<string | undefined>(getAbout)(
-          nameOpts,
-        );
-        if (e1) return cb(e1);
-
-        // Fetch avatar
-        const avatarOpts = {key: 'image', dest: id};
-        const [e2, val] = await runAsync<string>(getAbout)(avatarOpts);
-        if (e2) return cb(e2);
-        const imageUrl = imageToImageUrl(val);
-
-        // Push
-        pvthread.recps.push({id, name, imageUrl});
-      }
-    }
-    cb(null, pvthread as PrivateThreadAndExtras);
-  };
-}
-
-function augmentPeerWithExtras(ssb: any) {
-  const getAbout = ssb.cachedAbout.socialValue;
-  return async ([addr, peer]: PeerKV, cb: Callback<[string, any]>) => {
-    // Fetch name
-    const nameOpts = {key: 'name', dest: peer.key};
-    const [e1, name] = await runAsync<string | undefined>(getAbout)(nameOpts);
-    if (e1) return cb(e1);
-
-    // Fetch avatar
-    const avatarOpts = {key: 'image', dest: peer.key};
-    const [e2, val] = await runAsync(getAbout)(avatarOpts);
-    if (e2) return cb(e2);
-    const imageUrl = imageToImageUrl(val);
-
-    // Fetch 'isInDB' boolean
-    const [e4, isInDB] = await runAsync<boolean>(ssb.connUtils.isInDB)(addr);
-    if (e4) return cb(e4);
-
-    cb(null, [addr, {name, imageUrl, isInDB, ...peer}]);
-  };
-}
-
-function augmentPeersWithExtras(ssb: any) {
-  return async (kvs: Array<PeerKV>, cb: Callback<Array<PeerKV>>) => {
-    const peers: Array<PeerKV> = [];
-    for (const kv of kvs) {
-      const [err, peer] = await runAsync<any>(augmentPeerWithExtras(ssb))(kv);
-      if (err) {
-        cb(err);
-        return;
-      }
-      peers.push(peer);
-    }
-    cb(null, peers);
-  };
-}
 
 function dropCompletion(stream: Stream<any>): Stream<any> {
   return xs.merge(stream, xs.never());
@@ -220,36 +80,20 @@ export class SSBSource {
 
     this.selfFeedId$ = this.ssb$.map(ssb => ssb.id).remember();
 
-    // TODO put in the backend
     this.publicRawFeed$ = this.ssb$.map(ssb => (opts?: any) =>
-      pull(
-        ssb.createFeedStream({reverse: true, live: false, ...opts}),
-        pull.asyncMap(mutateMsgWithLiveExtras(ssb)),
-      ),
+      ssb.threadsUtils.publicRawFeed(opts),
     );
 
-    // TODO put in the backend
     this.publicFeed$ = this.ssb$.map(ssb => (opts?: any) =>
-      pull(
-        ssb.threads.public({
-          threadMaxSize: 3,
-          allowlist: ['post', 'contact'],
-          ...opts,
-        }),
-        pull.asyncMap(mutateThreadWithLiveExtras(ssb)),
-      ),
+      ssb.threadsUtils.publicFeed(opts),
     );
 
     this.publicLiveUpdates$ = this.getStream(ssb =>
       ssb.threads.publicUpdates({allowlist: ['post', 'contact']}),
     ).mapTo(null);
 
-    // TODO put in the backend
     this.privateFeed$ = this.ssb$.map(ssb => (opts?: any) =>
-      pull(
-        ssb.threads.private({threadMaxSize: 1, allowlist: ['post'], ...opts}),
-        pull.asyncMap(mutatePrivateThreadWithLiveExtras(ssb)),
-      ),
+      ssb.threadsUtils.privateFeed(opts),
     );
 
     this.privateLiveUpdates$ = this.getStream<MsgId>(ssb =>
@@ -260,39 +104,16 @@ export class SSBSource {
       (resp: any) => resp.started > 0,
     );
 
-    // TODO put in the backend
     this.selfPublicRoots$ = this.ssb$.map(ssb => (opts?: any) =>
-      pull(
-        ssb.createUserStream({id: ssb.id, ...opts}),
-        pull.filter(isRootPostMsg),
-        pull.filter(isPublic),
-        pull.map((msg: Msg) => ({messages: [msg], full: true} as ThreadData)),
-        pull.asyncMap(mutateThreadWithLiveExtras(ssb)),
-      ),
+      ssb.threadsUtils.selfPublicRoots(opts),
     );
 
-    // TODO put in the backend
     this.selfPrivateRoots$ = this.getStream<Msg>(ssb =>
-      pull(
-        ssb.threads.private({
-          threadMaxSize: 1,
-          allowlist: ['post'],
-          old: false,
-          live: true,
-        }),
-        pull.map((thread: ThreadData) => thread?.messages?.[0]),
-        pull.filter((msg: Msg) => msg?.value?.author === ssb.id),
-      ),
+      ssb.threadsUtils.selfPrivateRoots(),
     );
 
-    // TODO put in the backend
     this.selfReplies$ = this.ssb$.map(ssb => (opts?: any) =>
-      pull(
-        ssb.createUserStream({id: ssb.id, ...opts}),
-        pull.filter(isReplyPostMsg),
-        pull.filter(isPublic),
-        pull.asyncMap(mutateMsgWithLiveExtras(ssb)),
-      ),
+      ssb.threadsUtils.selfReplies(opts),
     );
 
     this.publishHook$ = this.ssb$
@@ -302,63 +123,11 @@ export class SSBSource {
     this.acceptInviteResponse$ = xs.create<true | string>();
     this.acceptDhtInviteResponse$ = xs.create<true | string>();
 
-    // TODO put in the backend
-    this.peers$ = this.ssb$
-      .map(ssb =>
-        xsFromPullStream<Array<PeerKV>>(ssb.conn.peers())
-          .map(peers =>
-            backoff(1e3, 2, 60e3)
-              .startWith(0)
-              .map(() => {
-                for (const [, data] of peers) {
-                  if (data.key) ssb.cachedAbout.invalidate(data.key);
-                }
-                return peers;
-              }),
-          )
-          .flatten()
-          .map(peersArr =>
-            xsFromCallback<any>(augmentPeersWithExtras(ssb))(peersArr),
-          )
-          .flatten(),
-      )
-      .flatten();
+    this.peers$ = this.getStream<Array<PeerKV>>(ssb => ssb.connUtils.peers());
 
-    // TODO put in the backend
-    this.stagedPeers$ = this.ssb$
-      .map(ssb => {
-        const connStagedPeers$ = xsFromPullStream<Array<StagedPeerKV>>(
-          ssb.conn.stagedPeers(),
-        )
-          .map(peersArr =>
-            xsFromCallback<any>(augmentPeersWithExtras(ssb))(peersArr),
-          )
-          .flatten();
-
-        //#region DHT-related hacks (ideally this should go through CONN)
-        const hosting$ = xsFromPullStream<Array<HostingDhtInvite>>(
-          ssb.dhtInvite.hostingInvites(),
-        )
-          .map(invites =>
-            invites
-              .filter(invite => !invite.online)
-              .map(
-                ({seed}) =>
-                  [
-                    `dht:${seed}:${ssb.id}`,
-                    {key: seed, type: 'dht', role: 'server'},
-                  ] as StagedPeerKV,
-              ),
-          )
-          .startWith([]);
-        const peersArr$ = xs
-          .combine(connStagedPeers$, hosting$)
-          .map(([as, bs]) => [...as, ...bs]);
-        //#endregion
-
-        return peersArr$;
-      })
-      .flatten();
+    this.stagedPeers$ = this.getStream<Array<StagedPeerKV>>(ssb =>
+      ssb.connUtils.stagedPeers(),
+    );
 
     this.bluetoothScanState$ =
       Platform.OS === 'ios'
@@ -373,59 +142,28 @@ export class SSBSource {
       .flatten() as Stream<T>;
   }
 
-  // TODO put in the backend
   public thread$(rootMsgId: MsgId, privately: boolean): Stream<AnyThread> {
-    const ssbToThread = (ssb: any, cb: any) => {
-      pull(
-        ssb.threads.thread({root: rootMsgId, private: privately}),
-        pull.asyncMap((t: ThreadData, cb2: Callback<AnyThread>) => {
-          if (privately) {
-            mutatePrivateThreadWithLiveExtras(ssb)(t, cb2);
-          } else {
-            mutateThreadWithLiveExtras(ssb)(t, cb2);
-          }
+    return this.ssb$
+      .map(
+        xsFromCallback<AnyThread>((ssb: any, cb: any) => {
+          ssb.threadsUtils.thread({root: rootMsgId, private: privately}, cb);
         }),
-        pull.take(1),
-        pull.drain(
-          (thread: AnyThread) => cb(null, thread),
-          (err: any) => (err ? cb(err) : void 0),
-        ),
-      );
-    };
-    const toThread$ = xsFromCallback<AnyThread>(ssbToThread);
-    return this.ssb$.map(toThread$).flatten();
+      )
+      .flatten();
   }
 
-  // TODO put in the backend
   public threadUpdates$(
     rootMsgId: MsgId,
     privately: boolean,
   ): Stream<MsgAndExtras> {
-    return this.ssb$
-      .map(ssb =>
-        pull(
-          ssb.threads.threadUpdates({root: rootMsgId, private: privately}),
-          pull.asyncMap(mutateMsgWithLiveExtras(ssb)),
-        ),
-      )
-      .map<Stream<MsgAndExtras>>(xsFromPullStream)
-      .flatten();
+    return this.getStream<MsgAndExtras>(ssb =>
+      ssb.threadsUtils.threadUpdates({root: rootMsgId, private: privately}),
+    );
   }
 
-  // TODO put in the backend
   public profileFeed$(id: FeedId): Stream<GetReadable<ThreadAndExtras>> {
     return this.ssb$.map(ssb => (opts?: any) =>
-      pull(
-        ssb.threads.profile({
-          id,
-          reverse: true,
-          live: false,
-          threadMaxSize: 3,
-          allowlist: ['post', 'contact'],
-          ...opts,
-        }),
-        pull.asyncMap(mutateThreadWithLiveExtras(ssb)),
-      ),
+      ssb.threadsUtils.profileFeed(id, opts),
     );
   }
 

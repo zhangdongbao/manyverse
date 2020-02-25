@@ -142,6 +142,10 @@ export default {
     endpoints: 'source',
     ping: 'sync',
   },
+  cachedAbout: {
+    socialValue: 'async',
+    invalidate: 'sync',
+  },
 
   // This project's plugins
   blobsUtils: {
@@ -150,7 +154,8 @@ export default {
   connUtils: {
     persistentConnect: 'async',
     persistentDisconnect: 'async',
-    isInDB: 'async',
+    peers: 'source',
+    stagedPeers: 'source',
   },
   publishUtilsBack: {
     publish: 'async',
@@ -164,6 +169,17 @@ export default {
   },
   syncing: {
     stream: 'source',
+  },
+  threadsUtils: {
+    publicRawFeed: 'source',
+    publicFeed: 'source',
+    privateFeed: 'source',
+    selfPublicRoots: 'source',
+    selfPrivateRoots: 'source',
+    selfReplies: 'source',
+    profileFeed: 'source',
+    threadUpdates: 'source',
+    thread: 'async',
   },
   votes: {
     voterStream: 'source',

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import ssbClient from 'react-native-ssb-client';
-import cachedAbout from 'ssb-cached-about';
 import manifest from './manifest';
 import hooksPlugin from './plugins/hooks';
 import publishUtilsPlugin from './plugins/publishUtils';
@@ -16,10 +15,17 @@ function makeClient() {
   return ssbClient(manifest)
     .use(hooksPlugin())
     .use(publishUtilsPlugin())
-    .use(cachedAbout())
     .use(contactsPlugin())
     .use(syncingNotifications())
     .callPromise();
 }
+
+// type ClientAPIFromManifest = {
+//   [key in keyof typeof manifest]: typeof manifest[key] extends string
+//     ? CallableFunction
+//     : {
+//         [key2 in keyof typeof manifest[key]]: CallableFunction;
+//       };
+// };
 
 export default makeClient;

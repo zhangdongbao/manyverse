@@ -5,12 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import {Component} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Platform} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+} from 'react-native';
 import {h} from '@cycle/react';
 import {FeedId, Msg} from 'ssb-typescript';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {displayName} from '../../ssb/utils/from-ssb';
-import {t} from '../../drivers/localization';
 import {Palette} from '../../global-styles/palette';
 import {Dimensions} from '../../global-styles/dimens';
 import {Typography} from '../../global-styles/typography';
@@ -18,32 +22,30 @@ import LocalizedHumanTime from '../LocalizedHumanTime';
 import Avatar from '../Avatar';
 
 export const styles = StyleSheet.create({
-  messageHeaderRow: {
+  container: {
     flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
     flex: 1,
     marginBottom: Dimensions.verticalSpaceSmall,
   },
 
-  messageAuthorImage: {
+  authorAvatar: {
     marginRight: Dimensions.horizontalSpaceSmall,
   },
 
-  messageHeaderAuthorColumn: {
-    flexDirection: 'column',
+  authorNameTouchable: {
     flex: 1,
-    alignItems: 'flex-start',
-    justifyContent: 'space-around',
   },
 
-  messageHeaderAuthorName: {
+  authorName: {
     fontSize: Typography.fontSizeNormal,
     fontWeight: 'bold',
     fontFamily: Typography.fontFamilyReadableText,
     color: Palette.text,
-    minWidth: 120,
   },
 
-  messageHeaderTimestamp: {
+  timestamp: {
     fontSize: Typography.fontSizeSmall,
     fontFamily: Typography.fontFamilyReadableText,
     color: Palette.textWeak,
@@ -52,10 +54,10 @@ export const styles = StyleSheet.create({
 
 export type Props = {
   msg: Msg;
+  style?: ViewStyle;
   name?: string;
   imageUrl: string | null;
   onPressAuthor?: (ev: {authorFeedId: FeedId}) => void;
-  onPressEtc?: (msg: Msg) => void;
 };
 
 export default class MessageHeader extends Component<Props> {
@@ -67,13 +69,6 @@ export default class MessageHeader extends Component<Props> {
     const onPressAuthor = this.props.onPressAuthor;
     if (onPressAuthor) {
       onPressAuthor({authorFeedId: this.props.msg.value.author});
-    }
-  };
-
-  private _onPressEtc = () => {
-    const onPressEtc = this.props.onPressEtc;
-    if (onPressEtc) {
-      onPressEtc(this.props.msg);
     }
   };
 
@@ -89,54 +84,35 @@ export default class MessageHeader extends Component<Props> {
   public render() {
     const {msg, name, imageUrl} = this.props;
     const authorTouchableProps = {
-      key: 'a',
       onPress: this._onPressAuthor,
       activeOpacity: 0.4,
     };
-    const etcTouchableProps = {
-      key: 'b',
-      onPress: this._onPressEtc,
-      activeOpacity: 0.4,
-      ...Platform.select({
-        ios: {hitSlop: {top: 6, left: 6, bottom: 6, right: 6}},
-      }),
-    };
 
-    return h(View, {style: styles.messageHeaderRow}, [
-      h(TouchableOpacity, authorTouchableProps, [
+    return h(View, {style: [styles.container, this.props.style]}, [
+      h(TouchableOpacity, {...authorTouchableProps, key: 'a'}, [
         h(Avatar, {
           size: Dimensions.avatarSizeNormal,
           url: imageUrl,
-          style: styles.messageAuthorImage,
+          style: styles.authorAvatar,
         }),
       ]),
-      h(View, {key: 'x', style: styles.messageHeaderAuthorColumn}, [
-        h(TouchableOpacity, authorTouchableProps, [
+      h(
+        TouchableOpacity,
+        {...authorTouchableProps, key: 'b', style: styles.authorNameTouchable},
+        [
           h(
             Text,
             {
               numberOfLines: 1,
               ellipsizeMode: 'middle',
-              style: styles.messageHeaderAuthorName,
+              style: styles.authorName,
             },
             displayName(name, msg.value.author),
           ),
-        ]),
-        h(Text, {key: 't', style: styles.messageHeaderTimestamp}, [
-          h(LocalizedHumanTime, {time: msg.value.timestamp}),
-        ]),
-      ]),
-      h(TouchableOpacity, etcTouchableProps, [
-        h(Icon, {
-          size: Dimensions.iconSizeNormal,
-          color: Palette.textVeryWeak,
-          name: 'chevron-down',
-          accessible: true,
-          accessibilityRole: 'button',
-          accessibilityLabel: t(
-            'message.call_to_action.etc.accessibility_label',
-          ),
-        }),
+        ],
+      ),
+      h(Text, {key: 't', style: styles.timestamp}, [
+        h(LocalizedHumanTime, {time: msg.value.timestamp}),
       ]),
     ]);
   }

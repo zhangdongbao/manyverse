@@ -22,14 +22,14 @@ import {t} from '../drivers/localization';
 import {Dimensions} from '../global-styles/dimens';
 import {Palette} from '../global-styles/palette';
 import {Typography} from '../global-styles/typography';
-import CompactThread from './CompactThread';
 import {GetReadable} from '../drivers/ssb';
 import {
-  ThreadAndExtras,
+  ThreadSummaryWithExtras,
   PressReactionsEvent,
   PressAddReactionEvent,
 } from '../ssb/types';
 import PlaceholderMessage from './messages/PlaceholderMessage';
+import ThreadCard from './ThreadCard';
 import PullFlatList from 'pull-flat-list';
 
 const pull = require('pull-stream');
@@ -149,8 +149,8 @@ class InitialLoading extends PureComponent<any> {
 }
 
 type Props = {
-  getReadable: GetReadable<ThreadAndExtras> | null;
-  getPublicationsReadable?: GetReadable<ThreadAndExtras> | null;
+  getReadable: GetReadable<ThreadSummaryWithExtras> | null;
+  getPublicationsReadable?: GetReadable<ThreadSummaryWithExtras> | null;
   publication$?: Stream<any> | null;
   scrollToTop$?: Stream<any> | null;
   selfFeedId: FeedId;
@@ -231,7 +231,7 @@ export default class Feed extends PureComponent<Props, State> {
     pull(
       readable,
       pull.take(1),
-      pull.drain((thread: ThreadAndExtras) => {
+      pull.drain((thread: ThreadSummaryWithExtras) => {
         that.setState({showPlaceholder: false});
         addedThreadsStream.push(thread);
       }),
@@ -288,15 +288,15 @@ export default class Feed extends PureComponent<Props, State> {
         .filter(() => this.yOffset <= Y_OFFSET_IS_AT_TOP)
         .mapTo(void 0),
       refreshColors: [Palette.backgroundBrandWeak],
-      keyExtractor: (thread: ThreadAndExtras, index: number) =>
-        thread.messages[0].key ?? String(index),
+      keyExtractor: (thread: ThreadSummaryWithExtras, index: number) =>
+        thread.root.key ?? String(index),
       ListHeaderComponent: showPlaceholder ? PlaceholderWithSeparator : null,
       ListFooterComponent: initialLoading ? InitialLoading : PlaceholderMessage,
       ListEmptyComponent: EmptyComponent,
       renderItem: ({item}: any) =>
         h(View, [
-          h(CompactThread, {
-            thread: item as ThreadAndExtras,
+          h(ThreadCard, {
+            thread: item as ThreadSummaryWithExtras,
             selfFeedId,
             onPressReactions,
             onPressAddReaction,

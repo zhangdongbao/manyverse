@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2019 The Manyverse Authors.
+/* Copyright (C) 2018-2020 The Manyverse Authors.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -111,6 +111,8 @@ class PlaceholderFooter extends PureComponent<{}> {
   }
 }
 
+// FIXME: redo this to use new ThreadCard design, or maybe we should
+// have both PlaceholderMessage and PlaceholderThreadCard?
 export default class PlaceholderMessage extends PureComponent<{}> {
   public render() {
     return h(MessageContainer, [

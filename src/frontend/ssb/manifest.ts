@@ -104,6 +104,7 @@ export default {
   },
   threads: {
     public: 'source',
+    publicSummary: 'source',
     publicUpdates: 'source',
     private: 'source',
     privateUpdates: 'source',

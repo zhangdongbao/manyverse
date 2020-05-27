@@ -7,9 +7,9 @@
 import xs, {Stream} from 'xstream';
 import debounce from 'xstream/extra/debounce';
 import {PureComponent} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View, ViewProps} from 'react-native';
 import {h} from '@cycle/react';
-import {FeedId, MsgId, Msg} from 'ssb-typescript';
+import {FeedId, MsgId, Msg, PostContent} from 'ssb-typescript';
 import {withXstreamProps} from 'react-xstream-hoc';
 import {
   PressReactionsEvent,
@@ -17,10 +17,14 @@ import {
   ThreadSummaryWithExtras,
   Reactions,
 } from '../ssb/types';
+import {t} from '../drivers/localization';
 import {Dimensions} from '../global-styles/dimens';
+import {Palette} from '../global-styles/palette';
 import MessageContainer from './messages/MessageContainer';
 import MessageFooter from './messages/MessageFooter';
 import MessageHeader from './messages/MessageHeader';
+import Markdown from './Markdown';
+import Button from './Button';
 
 export type Props = {
   thread: ThreadSummaryWithExtras;
@@ -45,7 +49,10 @@ const HEADER_HEIGHT = 40;
 /**
  * in pixels
  */
-const FOOTER_HEIGHT = 70;
+const FOOTER_HEIGHT = 75;
+
+const CONTAINER_HEIGHT =
+  CARD_HEIGHT - HEADER_HEIGHT - FOOTER_HEIGHT - Dimensions.verticalSpaceNormal;
 
 export const styles = StyleSheet.create({
   container: {
@@ -60,8 +67,23 @@ export const styles = StyleSheet.create({
   },
 
   post: {
-    marginVertical: Dimensions.verticalSpaceNormal,
+    marginTop: Dimensions.verticalSpaceNormal,
+    overflow: 'hidden',
     flex: 1,
+  },
+
+  readMoreContainer: {
+    position: 'absolute',
+    bottom: Dimensions.verticalSpaceSmall,
+    right: 0,
+    left: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
+
+  readMore: {
+    backgroundColor: Palette.backgroundText,
   },
 
   footer: {
@@ -73,10 +95,28 @@ export const styles = StyleSheet.create({
 
 const MessageFooter$ = withXstreamProps(MessageFooter, 'reactions');
 
-export default class ThreadCard extends PureComponent<Props> {
+type State = {
+  showReadMore: boolean;
+};
+
+export default class ThreadCard extends PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
   }
+
+  public state = {
+    showReadMore: false,
+  };
+
+  private onMarkdownMeasured: ViewProps['onLayout'] = ev => {
+    if (ev.nativeEvent.layout.height > CONTAINER_HEIGHT) {
+      this.setState({showReadMore: true});
+    }
+  };
+
+  private onPressReadMore = () => {
+    this.props.onPressExpand({rootMsgId: this.props.thread.root.key});
+  };
 
   public render() {
     const {
@@ -86,7 +126,6 @@ export default class ThreadCard extends PureComponent<Props> {
       onPressReactions,
       onPressReply,
       onPressAuthor,
-      // onPressExpand, // FIXME: implement this
       onPressEtc,
     } = this.props;
     const {root} = thread;
@@ -105,8 +144,26 @@ export default class ThreadCard extends PureComponent<Props> {
         onPressAuthor,
       }),
       h(View, {style: styles.post}, [
-        h(Text, {key: 'a', numberOfLines: 1}, `root: ${root.key}`),
-        h(Text, {key: 'b'}, `replies: ${thread.replyCount}`),
+        h(Markdown, {
+          key: 'md',
+          text: (root as Msg<PostContent>).value.content?.text ?? '',
+          onLayout: this.onMarkdownMeasured,
+        }),
+        this.state.showReadMore
+          ? h(View, {key: 'rm', style: styles.readMoreContainer}, [
+              h(Button, {
+                text: t('message.call_to_action.read_more.label'),
+                onPress: this.onPressReadMore,
+                strong: false,
+                small: true,
+                style: styles.readMore,
+                accessible: true,
+                accessibilityLabel: t(
+                  'message.call_to_action.read_more.accessibility_label',
+                ),
+              }),
+            ])
+          : null,
       ]),
       h(MessageFooter$, {
         key: 'mf',

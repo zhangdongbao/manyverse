@@ -45,7 +45,7 @@ const HEADER_HEIGHT = 40;
 /**
  * in pixels
  */
-const FOOTER_HEIGHT = 60;
+const FOOTER_HEIGHT = 70;
 
 export const styles = StyleSheet.create({
   container: {
@@ -114,6 +114,7 @@ export default class ThreadCard extends PureComponent<Props> {
         msg: root,
         selfFeedId,
         reactions,
+        replyCount: thread.replyCount,
         onPressReactions,
         onPressAddReaction,
         onPressReply,

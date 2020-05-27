@@ -25,6 +25,7 @@ export type Props = {
   name?: string;
   imageUrl: string | null;
   reactions: Reactions;
+  replyCount: number;
   selfFeedId: FeedId;
   onPressReactions?: (ev: PressReactionsEvent) => void;
   onPressAddReaction?: (ev: PressAddReactionEvent) => void;

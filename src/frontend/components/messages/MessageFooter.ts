@@ -51,36 +51,24 @@ const touchableProps =
     : {};
 
 export const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    flex: 1,
-  },
-
-  col: {
+  container: {
     flexDirection: 'column',
   },
 
-  reactionsShown: {
-    minWidth: 60,
-    paddingTop: Dimensions.verticalSpaceSmall,
-    paddingBottom: Dimensions.verticalSpaceSmall,
-    fontSize: Typography.fontSizeSmall,
-    fontFamily: Typography.fontFamilyReadableText,
-    color: Palette.textWeak,
-    fontWeight: 'bold',
+  summary: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+    flex: 2,
   },
 
-  reactionsHidden: {
-    paddingTop: Dimensions.verticalSpaceSmall,
-    paddingBottom: Dimensions.verticalSpaceSmall,
-    fontSize: Typography.fontSizeSmall,
-    fontFamily: Typography.fontFamilyReadableText,
-    color: Palette.backgroundText,
-  },
-
-  myReaction: {
-    fontSize: Typography.fontSizeBig,
-    lineHeight: Typography.fontSizeBig * 1.15,
+  buttons: {
+    borderTopWidth: 1,
+    borderTopColor: Palette.textLine,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+    flex: 3,
   },
 
   quickEmojiPickerModal: {
@@ -148,13 +136,56 @@ export const styles = StyleSheet.create({
     color: Palette.textWeak,
   },
 
-  buttons: {
-    borderTopWidth: 1,
-    borderTopColor: Palette.textLine,
+  summaryReactions: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'stretch',
     flex: 1,
+  },
+
+  summaryReplies: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'stretch',
+    flex: 1,
+  },
+
+  reactions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+  },
+
+  reactionsText: {
+    minWidth: 60,
+    fontFamily: Typography.fontFamilyReadableText,
+    fontWeight: 'bold',
+    fontSize: Typography.fontSizeSmall,
+    textAlignVertical: 'center',
+    textAlign: 'left',
+    color: Palette.textWeak,
+  },
+
+  replies: {
+    maxWidth: 60,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flex: 1,
+  },
+
+  repliesCounter: {
+    marginRight: Dimensions.horizontalSpaceTiny,
+    fontFamily: Typography.fontFamilyReadableText,
+    fontSize: Typography.fontSizeSmall,
+    textAlignVertical: 'center',
+    textAlign: 'right',
+    color: Palette.textWeak,
+  },
+
+  myReaction: {
+    fontSize: Typography.fontSizeBig,
+    lineHeight: Typography.fontSizeBig * 1.15,
   },
 
   prominentButton: {
@@ -179,14 +210,15 @@ class Reactions extends PureComponent<{
       .join('');
 
     const child = [
-      h(View, {style: styles.col, pointerEvents: 'box-only'}, [
+      h(View, {style: styles.reactions, pointerEvents: 'box-only'}, [
         h(
           Text,
           {
-            style: count > 0 ? styles.reactionsShown : styles.reactionsHidden,
+            style: styles.reactionsText,
             numberOfLines: 1,
+            ellipsizeMode: 'tail',
           },
-          summary,
+          count > 0 ? summary : ' ',
         ),
       ]),
     ];
@@ -207,6 +239,51 @@ class Reactions extends PureComponent<{
       );
     } else {
       return h(Fragment, child);
+    }
+  }
+}
+
+class Replies extends PureComponent<{
+  onPress: () => void;
+  replyCount: number;
+}> {
+  public render() {
+    const {replyCount, onPress} = this.props;
+
+    if (replyCount > 0) {
+      return h(
+        Touchable,
+        {
+          ...touchableProps,
+          onPress,
+          accessible: true,
+          accessibilityRole: 'button',
+          accessibilityLabel: t(
+            'message.call_to_action.show_reactions.accessibility_label',
+          ),
+        },
+        [
+          h(View, {style: styles.replies, pointerEvents: 'box-only'}, [
+            h(
+              Text,
+              {
+                key: 't',
+                style: styles.repliesCounter,
+                numberOfLines: 1,
+              },
+              String(replyCount),
+            ),
+            h(Icon, {
+              key: 'i',
+              size: Typography.fontSizeSmall,
+              color: Palette.textWeak,
+              name: 'comment-multiple-outline',
+            }),
+          ]),
+        ],
+      );
+    } else {
+      return h(View, {style: styles.replies});
     }
   }
 }
@@ -302,10 +379,12 @@ export type Props = {
   msg: Msg;
   selfFeedId: FeedId;
   reactions: ReactionsType;
+  replyCount: number;
   style?: ViewStyle;
   onPressReactions?: (ev: PressReactionsEvent) => void;
   onPressAddReaction?: (ev: PressAddReactionEvent) => void;
   onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void;
+  onPressExpand?: (msgId: MsgId) => void;
   onPressEtc?: (msg: Msg) => void;
 };
 export type State = {
@@ -370,11 +449,12 @@ export default class MessageFooter extends Component<Props, State> {
     this.props.onPressReply?.({msgKey, rootKey});
   };
 
+  private onPressExpandHandler = () => {
+    this.props.onPressExpand?.(this.props.msg.key);
+  };
+
   private onPressEtcHandler = () => {
-    const onPressEtc = this.props.onPressEtc;
-    if (onPressEtc) {
-      onPressEtc(this.props.msg);
-    }
+    this.props.onPressEtc?.(this.props.msg);
   };
 
   private findMyLatestReaction(): string | null {
@@ -536,14 +616,20 @@ export default class MessageFooter extends Component<Props, State> {
     const props = this.props;
     const shouldShowReply = !!props.onPressReply;
     const reactions = props.reactions ?? [];
+    const replyCount = props.replyCount;
     this.myReaction = this.findMyLatestReaction();
 
-    return h(View, {style: [styles.col, props.style]}, [
+    return h(View, {style: [styles.container, props.style]}, [
       this.renderQuickEmojiPickerModal(),
       this.renderFullEmojiPickerModal(),
 
-      h(View, {key: 'summary', style: styles.row}, [
-        h(Reactions, {reactions, onPress: this.onPressReactionsHandler}),
+      h(View, {key: 'summary', style: styles.summary}, [
+        h(View, {key: 'r', style: styles.summaryReactions}, [
+          h(Reactions, {reactions, onPress: this.onPressReactionsHandler}),
+        ]),
+        h(View, {key: 'c', style: styles.summaryReplies}, [
+          h(Replies, {replyCount, onPress: this.onPressExpandHandler}),
+        ]),
       ]),
 
       h(View, {key: 'buttons', style: styles.buttons}, [

@@ -40,6 +40,9 @@ const PullFlatList2 = propifyMethods(
   'forceRefresh',
 );
 
+const SEPARATOR_HEIGHT = Dimensions.verticalSpaceNormal;
+const Y_OFFSET_IS_AT_TOP = 10;
+
 export const styles = StyleSheet.create({
   container: {
     alignSelf: 'stretch',
@@ -48,7 +51,7 @@ export const styles = StyleSheet.create({
 
   itemSeparator: {
     backgroundColor: Palette.backgroundVoid,
-    height: Dimensions.verticalSpaceNormal,
+    height: SEPARATOR_HEIGHT,
   },
 
   footer: {
@@ -174,8 +177,6 @@ type State = {
   initialLoading: boolean;
 };
 
-const Y_OFFSET_IS_AT_TOP = 10;
-
 export default class Feed extends PureComponent<Props, State> {
   private addedThreadsStream: any | null;
   private yOffset: number;
@@ -293,6 +294,10 @@ export default class Feed extends PureComponent<Props, State> {
       ListHeaderComponent: showPlaceholder ? PlaceholderWithSeparator : null,
       ListFooterComponent: initialLoading ? InitialLoading : PlaceholderMessage,
       ListEmptyComponent: EmptyComponent,
+      getItemLayout: (_data: any, index: number) => {
+        const height = ThreadCard.HEIGHT + SEPARATOR_HEIGHT;
+        return {length: height, offset: height * index, index};
+      },
       renderItem: ({item}: any) =>
         h(View, [
           h(ThreadCard, {

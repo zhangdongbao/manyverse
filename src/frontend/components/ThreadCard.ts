@@ -103,6 +103,11 @@ export default class ThreadCard extends PureComponent<Props, State> {
     showReadMore: false,
   };
 
+  /**
+   * In pixels
+   */
+  public static HEIGHT = CARD_HEIGHT;
+
   private onMarkdownMeasured: ViewProps['onLayout'] = ev => {
     if (ev.nativeEvent.layout.height > CONTAINER_HEIGHT) {
       this.setState({showReadMore: true});

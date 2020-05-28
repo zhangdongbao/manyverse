@@ -11,12 +11,13 @@ import {AsyncStorageSource} from 'cycle-native-asyncstorage';
 import {FeedId, MsgId} from 'ssb-typescript';
 import {ThreadAndExtras, MsgAndExtras} from '../../ssb/types';
 import {SSBSource, GetReadable} from '../../drivers/ssb';
-import {Props} from './index';
+import {Props} from './props';
 
 export type State = {
   selfFeedId: FeedId;
   rootMsgId: MsgId | null;
   loading: boolean;
+  loadingReplies: boolean;
   thread: ThreadAndExtras;
   replyText: string;
   replyEditable: boolean;
@@ -63,9 +64,12 @@ export default function model(
       function propsReducer(_prev?: State): State {
         return {
           selfFeedId: props.selfFeedId,
-          rootMsgId: props.rootMsgId ?? null,
+          rootMsgId: props.rootMsgId ?? props.rootMsg.key,
           loading: true,
-          thread: emptyThread,
+          loadingReplies: !!props.rootMsg,
+          thread: props.rootMsg
+            ? {full: false, messages: [props.rootMsg]}
+            : emptyThread,
           replyText: '',
           replyEditable: true,
           getSelfRepliesReadable: null,
@@ -78,17 +82,19 @@ export default function model(
   const setThreadReducer$ = props$
     .take(1)
     .map(props =>
-      ssbSource.thread$(props.rootMsgId, false).replaceError(err => {
-        if (/Author Blocked/i.test(err.message)) return xs.of(blockedThread);
-        if (/Not Found/i.test(err.message)) return xs.of(missingThread);
-        else return xs.of(unknownErrorThread);
-      }),
+      ssbSource
+        .thread$(props.rootMsgId ?? props.rootMsg.key, false)
+        .replaceError(err => {
+          if (/Author Blocked/i.test(err.message)) return xs.of(blockedThread);
+          if (/Not Found/i.test(err.message)) return xs.of(missingThread);
+          else return xs.of(unknownErrorThread);
+        }),
     )
     .flatten()
     .map(
       thread =>
         function setThreadReducer(prev: State): State {
-          return {...prev, thread, loading: false};
+          return {...prev, thread, loading: false, loadingReplies: false};
         },
     );
 

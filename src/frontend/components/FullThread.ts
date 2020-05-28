@@ -24,7 +24,7 @@ export type Props = {
   thread: ThreadAndExtras;
   publication$?: Stream<any> | null;
   selfFeedId: FeedId;
-  onPressFork?: (ev: {rootMsgId: MsgId}) => void;
+  onPressFork?: (ev: {rootMsgId: MsgId}) => void; // FIXME: support this?
   onPressReactions?: (ev: PressReactionsEvent) => void;
   onPressAddReaction?: (ev: PressAddReactionEvent) => void;
   onPressAuthor?: (ev: {authorFeedId: FeedId}) => void;

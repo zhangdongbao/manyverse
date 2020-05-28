@@ -342,6 +342,11 @@ export default class MessageFooter extends Component<Props, State> {
     showFullEmojis: false,
   };
 
+  /**
+   * in pixels
+   */
+  public static HEIGHT = 75;
+
   private myReaction: string | null = null;
 
   private onPressReactionsHandler = () => {

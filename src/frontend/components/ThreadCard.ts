@@ -42,17 +42,12 @@ export type Props = {
  * in pixels
  */
 const CARD_HEIGHT = 350;
-/**
- * in pixels
- */
-const HEADER_HEIGHT = 40;
-/**
- * in pixels
- */
-const FOOTER_HEIGHT = 75;
 
 const CONTAINER_HEIGHT =
-  CARD_HEIGHT - HEADER_HEIGHT - FOOTER_HEIGHT - Dimensions.verticalSpaceNormal;
+  CARD_HEIGHT -
+  MessageHeader.HEIGHT -
+  Dimensions.verticalSpaceNormal -
+  MessageFooter.HEIGHT;
 
 export const styles = StyleSheet.create({
   container: {
@@ -62,7 +57,7 @@ export const styles = StyleSheet.create({
 
   header: {
     flex: 0,
-    height: HEADER_HEIGHT,
+    height: MessageHeader.HEIGHT,
     marginBottom: 0, // FIXME: maybe this should be inside MessageHeader?
   },
 
@@ -88,7 +83,7 @@ export const styles = StyleSheet.create({
 
   footer: {
     flex: 0,
-    height: FOOTER_HEIGHT,
+    height: MessageFooter.HEIGHT,
     marginBottom: -Dimensions.verticalSpaceBig,
   },
 });

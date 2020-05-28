@@ -65,6 +65,11 @@ export default class MessageHeader extends Component<Props> {
     super(props);
   }
 
+  /**
+   * in pixels
+   */
+  public static HEIGHT = 40;
+
   private _onPressAuthor = () => {
     const onPressAuthor = this.props.onPressAuthor;
     if (onPressAuthor) {

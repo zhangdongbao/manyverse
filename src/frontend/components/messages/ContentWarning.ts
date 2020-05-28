@@ -12,40 +12,85 @@ import {
   StyleProp,
   ViewStyle,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import {h} from '@cycle/react';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {t} from '../../drivers/localization';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Button from '../Button';
 import {Palette} from '../../global-styles/palette';
 import {Dimensions} from '../../global-styles/dimens';
-import {Typography} from '../../global-styles/typography';
+import {Typography as Typ} from '../../global-styles/typography';
 
 export const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: Dimensions.horizontalSpaceNormal,
-    paddingVertical: Dimensions.verticalSpaceNormal,
     backgroundColor: Palette.backgroundTextWeak,
-    borderColor: Palette.textVeryWeak,
-    borderWidth: 0.5,
-    borderRadius: 3,
-    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
 
-  toggle: {
-    marginLeft: Dimensions.horizontalSpaceNormal,
-    fontSize: Typography.fontSizeNormal,
-    fontWeight: 'bold',
-    fontFamily: Typography.fontFamilyReadableText,
-    color: Palette.text,
+  containerOpened: {
+    paddingVertical: Dimensions.verticalSpaceTiny,
+    paddingHorizontal: Dimensions.horizontalSpaceSmall,
+    borderRadius: 3,
+    flexDirection: 'row',
+  },
+
+  containerClosed: {
+    marginVertical: Dimensions.verticalSpaceNormal,
+    marginHorizontal: Dimensions.horizontalSpaceNormal,
+    paddingVertical: Dimensions.verticalSpaceBig,
+    paddingHorizontal: Dimensions.horizontalSpaceNormal,
+    borderRadius: 10,
+    height: 215,
+    flexDirection: 'column',
+  },
+
+  iconOpened: {
+    marginRight: Dimensions.horizontalSpaceSmall,
+  },
+
+  iconClosed: {
+    position: 'absolute',
+    top: Dimensions.verticalSpaceLarge,
+    left: Dimensions.horizontalSpaceLarge,
+    opacity: 0.1,
+  },
+
+  title: {
+    fontSize: Typ.fontSizeLarge,
+    fontFamily: Typ.fontFamilyReadableText,
+    marginBottom: Dimensions.verticalSpaceSmall,
+    ...Platform.select({
+      default: {
+        textAlign: 'left',
+      },
+      ios: {
+        textAlign: 'center',
+      },
+    }),
   },
 
   description: {
-    flex: 1,
-    fontSize: Typography.fontSizeNormal,
-    fontFamily: Typography.fontFamilyReadableText,
     color: Palette.textWeak,
-    textAlign: 'left',
+    fontSize: Typ.fontSizeNormal,
+    fontFamily: Typ.fontFamilyReadableText,
+    lineHeight: Typ.baseSize * Typ.baseLeading,
+  },
+
+  toggleOpened: {
+    marginLeft: Dimensions.horizontalSpaceNormal,
+    color: Palette.text,
+    fontFamily: Typ.fontFamilyReadableText,
+    fontSize: Typ.fontSizeNormal,
+    fontWeight: 'bold',
+  },
+
+  toggleClosed: {
+    color: Palette.textForBackgroundBrand,
+    backgroundColor: Palette.textWeak,
+    width: 'auto',
+    alignSelf: 'center',
   },
 });
 
@@ -59,38 +104,68 @@ export type Props = {
 export default class ContentWarning extends PureComponent<Props> {
   public render() {
     const {description, opened, style} = this.props;
-    const touchableProps = {
-      onPress: this.props.onPressToggle,
-      activeOpacity: 0.4,
-      key: 'b',
-    };
 
     return h(
       View,
-      {style: [styles.container, style ?? null] as readonly ViewStyle[]},
+      {
+        style: [
+          styles.container,
+          opened ? styles.containerOpened : styles.containerClosed,
+          style ?? null,
+        ] as readonly ViewStyle[],
+      },
       [
-        h(Text, {key: 'a', style: styles.description, selectable: true}, [
-          h(Icon, {
-            size: Typography.fontSizeNormal,
-            color: Palette.textWeak,
-            name: 'alert',
-          }),
-          ' ',
-          description,
-        ]),
-        h(TouchableOpacity, touchableProps, [
+        h(
+          View,
+          {key: 'x', style: opened ? styles.iconOpened : styles.iconClosed},
+          [
+            h(Icon, {
+              size: opened ? 24 : 144,
+              color: Palette.textWeak,
+              name: 'alert',
+            }),
+          ],
+        ),
+        h(View, {style: {flexShrink: 1}}, [
+          opened
+            ? null
+            : h(
+                Text,
+                {key: 'a', style: styles.title, selectable: true},
+                t('compose.dialogs.content_warning.title'),
+              ),
           h(
             Text,
             {
-              numberOfLines: 1,
-              ellipsizeMode: 'middle',
-              style: styles.toggle,
+              key: 'b',
+              numberOfLines: opened ? 1 : 4,
+              ellipsizeMode: 'tail',
+              style: styles.description,
+              selectable: true,
             },
-            opened
-              ? t('message.content_warning.call_to_action.hide')
-              : t('message.content_warning.call_to_action.show'),
+            description,
           ),
         ]),
+        opened
+          ? h(
+              TouchableOpacity,
+              {key: 'c', onPress: this.props.onPressToggle, activeOpacity: 0.4},
+              [
+                h(
+                  Text,
+                  {style: styles.toggleOpened},
+                  t('message.content_warning.call_to_action.hide'),
+                ),
+              ],
+            )
+          : h(Button, {
+              key: 'c',
+              text: t('message.content_warning.call_to_action.show'),
+              onPress: this.props.onPressToggle,
+              strong: true,
+              style: styles.toggleClosed,
+              accessible: true,
+            }),
       ],
     );
   }

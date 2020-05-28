@@ -32,7 +32,7 @@ export type Props = {
   onPressFork?: (ev: {rootMsgId: MsgId}) => void; // FIXME: delete this?
   onPressReactions?: (ev: PressReactionsEvent) => void;
   onPressAddReaction?: (ev: PressAddReactionEvent) => void;
-  onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void;
+  onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void; // FIXME: delete this?
   onPressAuthor?: (ev: {authorFeedId: FeedId}) => void;
   onPressEtc?: (msg: Msg) => void;
   onPressExpand: (ev: {rootMsgId: MsgId}) => void;
@@ -118,13 +118,16 @@ export default class ThreadCard extends PureComponent<Props, State> {
     this.props.onPressExpand({rootMsgId: this.props.thread.root.key});
   };
 
+  private onPressReplyHandler: MessageFooter['props']['onPressReply'] = ev => {
+    this.props.onPressExpand({rootMsgId: ev.rootKey});
+  };
+
   public render() {
     const {
       thread,
       selfFeedId,
       onPressAddReaction,
       onPressReactions,
-      onPressReply,
       onPressAuthor,
       onPressEtc,
     } = this.props;
@@ -174,7 +177,7 @@ export default class ThreadCard extends PureComponent<Props, State> {
         replyCount: thread.replyCount,
         onPressReactions,
         onPressAddReaction,
-        onPressReply,
+        onPressReply: this.onPressReplyHandler!,
         onPressEtc,
       }),
     ]);

@@ -55,14 +55,14 @@ export const styles = StyleSheet.create({
     flexDirection: 'column',
   },
 
-  summary: {
+  reactionsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'stretch',
     flex: 2,
   },
 
-  buttons: {
+  buttonsContainer: {
     borderTopWidth: 1,
     borderTopColor: Palette.textLine,
     flexDirection: 'row',
@@ -136,20 +136,6 @@ export const styles = StyleSheet.create({
     color: Palette.textWeak,
   },
 
-  summaryReactions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'stretch',
-    flex: 1,
-  },
-
-  summaryReplies: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'stretch',
-    flex: 1,
-  },
-
   reactions: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -166,18 +152,10 @@ export const styles = StyleSheet.create({
     color: Palette.textWeak,
   },
 
-  replies: {
-    maxWidth: 60,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    flex: 1,
-  },
-
   repliesCounter: {
     marginRight: Dimensions.horizontalSpaceTiny,
     fontFamily: Typography.fontFamilyReadableText,
-    fontSize: Typography.fontSizeSmall,
+    fontSize: Typography.fontSizeNormal,
     textAlignVertical: 'center',
     textAlign: 'right',
     color: Palette.textWeak,
@@ -201,13 +179,9 @@ class Reactions extends PureComponent<{
   reactions: NonNullable<ReactionsType>;
 }> {
   public render() {
-    const MAX = 10;
     const {reactions, onPress} = this.props;
     const count = reactions.length;
-    const summary = reactions
-      .slice(0, Math.min(count, MAX)) // take first `MAX` recent reactions
-      .map(([_feed, reaction]) => reaction)
-      .join('');
+    const summary = reactions.map(([_feed, reaction]) => reaction).join('');
 
     const child = [
       h(View, {style: styles.reactions, pointerEvents: 'box-only'}, [
@@ -239,51 +213,6 @@ class Reactions extends PureComponent<{
       );
     } else {
       return h(Fragment, child);
-    }
-  }
-}
-
-class Replies extends PureComponent<{
-  onPress: () => void;
-  replyCount: number;
-}> {
-  public render() {
-    const {replyCount, onPress} = this.props;
-
-    if (replyCount > 0) {
-      return h(
-        Touchable,
-        {
-          ...touchableProps,
-          onPress,
-          accessible: true,
-          accessibilityRole: 'button',
-          accessibilityLabel: t(
-            'message.call_to_action.show_reactions.accessibility_label',
-          ),
-        },
-        [
-          h(View, {style: styles.replies, pointerEvents: 'box-only'}, [
-            h(
-              Text,
-              {
-                key: 't',
-                style: styles.repliesCounter,
-                numberOfLines: 1,
-              },
-              String(replyCount),
-            ),
-            h(Icon, {
-              key: 'i',
-              size: Typography.fontSizeSmall,
-              color: Palette.textWeak,
-              name: 'comment-multiple-outline',
-            }),
-          ]),
-        ],
-      );
-    } else {
-      return h(View, {style: styles.replies});
     }
   }
 }
@@ -324,8 +253,13 @@ class AddReactionButton extends PureComponent<{
   }
 }
 
-class ReplyButton extends PureComponent<{onPress: () => void}> {
+class ReplyButton extends PureComponent<{
+  onPress: () => void;
+  replyCount: number;
+}> {
   public render() {
+    const {replyCount} = this.props;
+
     return h(
       Touchable,
       {
@@ -339,6 +273,17 @@ class ReplyButton extends PureComponent<{onPress: () => void}> {
       },
       [
         h(View, {style: styles.prominentButton, pointerEvents: 'box-only'}, [
+          replyCount > 0
+            ? h(
+                Text,
+                {
+                  key: 't',
+                  style: styles.repliesCounter,
+                  numberOfLines: 1,
+                },
+                String(replyCount),
+              )
+            : null,
           h(Icon, {
             key: 'icon',
             size: Dimensions.iconSizeSmall,
@@ -384,7 +329,6 @@ export type Props = {
   onPressReactions?: (ev: PressReactionsEvent) => void;
   onPressAddReaction?: (ev: PressAddReactionEvent) => void;
   onPressReply?: (ev: {msgKey: MsgId; rootKey: MsgId}) => void;
-  onPressExpand?: (msgId: MsgId) => void;
   onPressEtc?: (msg: Msg) => void;
 };
 export type State = {
@@ -447,10 +391,6 @@ export default class MessageFooter extends Component<Props, State> {
     const msgKey = msg.key;
     const rootKey = (msg?.value?.content as PostContent)?.root ?? msgKey;
     this.props.onPressReply?.({msgKey, rootKey});
-  };
-
-  private onPressExpandHandler = () => {
-    this.props.onPressExpand?.(this.props.msg.key);
   };
 
   private onPressEtcHandler = () => {
@@ -623,16 +563,11 @@ export default class MessageFooter extends Component<Props, State> {
       this.renderQuickEmojiPickerModal(),
       this.renderFullEmojiPickerModal(),
 
-      h(View, {key: 'summary', style: styles.summary}, [
-        h(View, {key: 'r', style: styles.summaryReactions}, [
-          h(Reactions, {reactions, onPress: this.onPressReactionsHandler}),
-        ]),
-        h(View, {key: 'c', style: styles.summaryReplies}, [
-          h(Replies, {replyCount, onPress: this.onPressExpandHandler}),
-        ]),
+      h(View, {key: 'summary', style: styles.reactionsContainer}, [
+        h(Reactions, {reactions, onPress: this.onPressReactionsHandler}),
       ]),
 
-      h(View, {key: 'buttons', style: styles.buttons}, [
+      h(View, {key: 'buttons', style: styles.buttonsContainer}, [
         h(AddReactionButton, {
           key: 'react',
           onPress: this.onPressAddReactionHandler,
@@ -640,7 +575,11 @@ export default class MessageFooter extends Component<Props, State> {
         }),
 
         shouldShowReply
-          ? h(ReplyButton, {key: 'reply', onPress: this.onPressReplyHandler})
+          ? h(ReplyButton, {
+              key: 'reply',
+              replyCount,
+              onPress: this.onPressReplyHandler,
+            })
           : null,
 
         h(EtcButton, {key: 'etc', onPress: this.onPressEtcHandler}),
